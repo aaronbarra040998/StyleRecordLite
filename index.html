@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StyleRecord Lite</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome para iconos -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <script type="module" crossorigin src="/stylerecord-lite/assets/main-DG47LgF1.js"></script>
+    <link rel="stylesheet" crossorigin href="/stylerecord-lite/assets/main-Dnyo01rW.css">
+  </head>
+  <body>
+    <header id="main-header"></header>
+
+    <main>
+      <!-- Login (si no está autenticado) -->
+      <section id="login-section" class="view active">
+        <h2>Accede a StyleRecord</h2>
+        <div class="login-options">
+          <button id="btn-professional-login" class="login-btn">
+            <i class="fas fa-cut"></i> Soy Profesional
+          </button>
+          <button id="btn-client-login" class="login-btn">
+            <i class="fas fa-user"></i> Soy Cliente
+          </button>
+        </div>
+        <div id="login-form-container" class="hidden"></div>
+      </section>
+
+      <!-- Vista del profesional -->
+      <section id="professional-view" class="view">
+        <h2><i class="fas fa-cut"></i> Panel del Profesional</h2>
+        <button id="btn-new-client" class="action-btn">
+          <i class="fas fa-plus-circle"></i> Nuevo Cliente
+        </button>
+        <div id="client-list" class="client-list"></div>
+        <div id="service-history" class="service-history"></div>
+      </section>
+
+      <!-- Vista del cliente -->
+      <section id="client-view" class="view">
+        <h2><i class="fas fa-history"></i> Mi Historial de Servicios</h2>
+        <div id="client-history" class="history-cards"></div>
+        <button id="btn-share-profile" class="action-btn">
+          <i class="fas fa-share-alt"></i> Compartir Perfil
+        </button>
+      </section>
+
+      <!-- Modal genérico -->
+      <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal-content">
+          <span class="modal-close" id="modal-close">&times;</span>
+          <div id="modal-body"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer id="main-footer"></footer>
+  </body>
+</html>
