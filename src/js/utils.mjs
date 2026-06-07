@@ -10,13 +10,15 @@ export function renderWithTemplate(template, parent, data, callback) {
 }
 
 export async function loadTemplate(path) {
-  const res = await fetch(path);
+  // Aseguramos que la ruta funcione tanto en local como en producción
+  const fullPath = import.meta.env.BASE_URL + path.replace(/^\//, '');
+  const res = await fetch(fullPath);
   return await res.text();
 }
 
 export async function loadHeaderFooter() {
-  const headerTemplate = await loadTemplate("/partials/header.html");
-  const footerTemplate = await loadTemplate("/partials/footer.html");
+  const headerTemplate = await loadTemplate("partials/header.html");
+  const footerTemplate = await loadTemplate("partials/footer.html");
   const headerEl = qs("#main-header");
   const footerEl = qs("#main-footer");
   renderWithTemplate(headerTemplate, headerEl);
