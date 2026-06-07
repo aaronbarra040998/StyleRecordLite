@@ -1,7 +1,7 @@
 const API_KEY = "c43204c2a5e320e5600d73ce305b6f0d";
 
 export async function validatePhone(phoneNumber) {
-  const url = `http://apilayer.net/api/validate?access_key=${API_KEY}&number=${encodeURIComponent(phoneNumber)}`;
+  const url = `https://apilayer.net/api/validate?access_key=${API_KEY}&number=${encodeURIComponent(phoneNumber)}`;
 
   try {
     const response = await fetch(url);
