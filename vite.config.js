@@ -3,9 +3,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   root: "src/",
-  base: "/stylerecord-lite/",   // ← ¡CAMBIA ESTO por el nombre real de tu repo!
+  base: "/StyleRecordLite/", // <-- cambia esto por el nombre EXACTO de tu repo
   build: {
-    outDir: "../dist",
+    outDir: "../docs",
     rollupOptions: {
       input: {
         main: resolve(__dirname, "src/index.html"),
