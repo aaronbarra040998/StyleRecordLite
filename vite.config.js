@@ -1,17 +1,15 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { resolve } from "path";
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  root: '.',
+  root: "src/",
+  base: "/stylerecord-lite/",   // ← cambia por el nombre exacto de tu repo, o '/' si es pagina principal
   build: {
-    outDir: 'dist',
+    outDir: "../dist",
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
+        main: resolve(__dirname, "src/index.html"),
       },
     },
-  },
-  server: {
-    open: true,
   },
 });
