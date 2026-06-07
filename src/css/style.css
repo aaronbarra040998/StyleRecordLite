@@ -228,3 +228,91 @@ form button {
     align-items: flex-start;
   }
 }
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.toolbar input {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: var(--radius);
+}
+
+/* Tarjeta de cliente */
+.client-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.client-card:hover {
+  background: #f3e5f5;
+}
+
+.client-info {
+  flex: 1;
+}
+
+.client-actions button {
+  background: none;
+  color: var(--danger);
+  font-size: 1.2rem;
+}
+
+/* Tarjeta de servicio */
+.service-card {
+  margin-left: 1rem;
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.image-pair {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+.image-pair img {
+  width: 150px;
+  border-radius: var(--radius);
+}
+
+.service-actions button {
+  background: none;
+  border: 1px solid var(--secondary);
+  margin-right: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+.service-actions button:last-child {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Vista previa en modal */
+.image-preview {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.image-preview img {
+  width: 120px;
+  border-radius: var(--radius);
+}

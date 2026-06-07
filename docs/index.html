@@ -19,8 +19,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
 
-    <script type="module" crossorigin src="/StyleRecordLite/assets/main-BRfjBs3P.js"></script>
-    <link rel="stylesheet" crossorigin href="/StyleRecordLite/assets/main-Dnyo01rW.css">
+    <script type="module" crossorigin src="/StyleRecordLite/assets/main-DVZ_H22-.js"></script>
+    <link rel="stylesheet" crossorigin href="/StyleRecordLite/assets/main-CygbXCxf.css">
   </head>
   <body>
     <header id="main-header"></header>
@@ -43,10 +43,16 @@
       <!-- Vista del profesional -->
       <section id="professional-view" class="view">
         <h2><i class="fas fa-cut"></i> Panel del Profesional</h2>
-        <button id="btn-new-client" class="action-btn">
-          <i class="fas fa-plus-circle"></i> Nuevo Cliente
-        </button>
+        <div class="toolbar">
+          <input type="text" id="client-search" placeholder="Buscar cliente..." />
+          <button id="btn-new-client" class="action-btn">
+            <i class="fas fa-plus-circle"></i> Nuevo Cliente
+          </button>
+        </div>
         <div id="client-list" class="client-list"></div>
+        <button id="btn-add-service" class="action-btn" style="display:none;">
+          <i class="fas fa-plus-circle"></i> Agregar Servicio
+        </button>
         <div id="service-history" class="service-history"></div>
       </section>
 
