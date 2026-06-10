@@ -30,3 +30,28 @@ export function validateServiceFormData(type, date, notes) {
   if (errDate) errors.date = errDate;
   return errors;
 }
+
+// ─── Validaciones para registro profesional ───
+
+export function validateProfessionalType(type) {
+  return type ? null : 'Selecciona un tipo de profesional.';
+}
+
+export function validateModality(modality) {
+  return modality ? null : 'Selecciona una modalidad.';
+}
+
+export function validateBusinessName(name) {
+  if (!name || !name.trim()) return 'El nombre del local es obligatorio.';
+  return null;
+}
+
+export function validateAddress(address) {
+  if (!address || !address.trim()) return 'La dirección es obligatoria.';
+  return null;
+}
+
+export function validateCompanyName(name) {
+  if (!name || !name.trim()) return 'El nombre de la empresa es obligatorio.';
+  return null;
+}

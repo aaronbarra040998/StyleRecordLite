@@ -1,7 +1,7 @@
-import { renderSharedView } from '../ui.mjs';
-import { validateShareToken } from '../shareProfile.mjs';
+import { renderSharedView, showSkeletonCards } from '../ui.mjs';
 
 export async function initSharedView(container, token) {
+  showSkeletonCards(container, 2);
   const clientId = validateShareToken(token);
   if (clientId) {
     await renderSharedView(clientId, container);

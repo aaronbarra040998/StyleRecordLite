@@ -14,13 +14,15 @@ class Router {
 
   resolve() {
     const hash = window.location.hash.slice(1) || '/';
-    const handler = this.routes[hash] || this.routes['*'];
+    // Separar la ruta de los query params (ej: /login?role=professional → /login)
+    const [path] = hash.split('?');
+    const handler = this.routes[path] || this.routes['*'];
     if (handler) handler();
   }
 
   start() {
     if (!window.location.hash) {
-      window.location.hash = '/login';
+      window.location.hash = '/home';
     } else {
       this.resolve();
     }

@@ -5,12 +5,14 @@ export function getPlaceholderImage(width = 300, height = 200, seed = null) {
   return `https://picsum.photos/${seedPart}${width}/${height}`;
 }
 
-// Genera un par de URLs (antes/después) con seeds diferentes para simular cambio.
+// Genera un trío de URLs (antes, después frontal, después lateral) con seeds diferentes.
 export function getBeforeAfterPlaceholders() {
   const beforeSeed = Math.random().toString(36).substring(2, 10);
-  const afterSeed = Math.random().toString(36).substring(2, 10);
+  const frontalSeed = Math.random().toString(36).substring(2, 10);
+  const lateralSeed = Math.random().toString(36).substring(2, 10);
   return {
-    before: getPlaceholderImage(300, 200, beforeSeed),
-    after: getPlaceholderImage(300, 200, afterSeed),
+    beforeImg: getPlaceholderImage(300, 200, beforeSeed),
+    afterImg: getPlaceholderImage(300, 200, frontalSeed),
+    afterLateralImg: getPlaceholderImage(300, 200, lateralSeed),
   };
 }

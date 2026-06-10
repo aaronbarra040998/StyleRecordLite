@@ -19,7 +19,6 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{html,css,js,svg,png,ico,woff2}'],
-        // Opciones para evitar cachés viejas y tomar control rápido
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

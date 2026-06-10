@@ -7,20 +7,17 @@ import { validateClientFormData, validateServiceFormData } from '../validators.m
 import { showError, showSuccess } from '../toast.mjs';
 import { escapeHtml, debounce } from '../utils.mjs';
 import { selectedClientId, setSelectedClientId } from '../state.mjs';
-import { showModal, hideModal, showConfirmModal } from '../ui.mjs';
-import { logout } from '../auth.mjs';   // ← AÑADIDO
+import { showModal, hideModal, showConfirmModal, showSkeletonCards } from '../ui.mjs';
+import { logout } from '../auth.mjs';
+import { t } from '../i18n.mjs';
 
-// Referencia para refrescar lista del sidebar
 let refreshSidebarFn;
 
 export async function initProfessionalView(main) {
-  // Ocultar header/footer genéricos
   document.body.classList.add('dashboard-mode');
 
-  // Construir estructura del dashboard
   main.innerHTML = `
     <div class="dashboard">
-      <!-- Sidebar -->
       <aside class="dashboard-sidebar" id="dashboard-sidebar">
         <button class="btn-new-client" id="btn-new-client">
           <i class="fas fa-plus"></i> Nuevo Cliente
@@ -29,7 +26,6 @@ export async function initProfessionalView(main) {
         <div class="sidebar-client-list" id="sidebar-client-list"></div>
       </aside>
 
-      <!-- Contenido principal -->
       <section class="dashboard-main">
         <div class="dashboard-header">
           <div class="dashboard-logo">StyleRecord Lite</div>
@@ -38,8 +34,19 @@ export async function initProfessionalView(main) {
             <input type="text" id="dashboard-search" placeholder="Buscar cliente..." />
           </div>
           <div class="dashboard-actions">
-            <i class="fas fa-cog"></i>
-            <button id="btn-logout-dash"><i class="fas fa-sign-out-alt"></i></button>
+            <div class="profile-menu-container">
+              <button class="profile-menu-trigger" id="profile-menu-trigger" aria-label="Menú de perfil">
+                <i class="fas fa-cog"></i>
+              </button>
+              <div class="profile-dropdown hidden" id="profile-dropdown">
+                <div class="profile-info">
+                  <span class="profile-name">Profesional</span>
+                  <span class="profile-role">Administrador</span>
+                </div>
+                <a href="#/configuracion" class="profile-link" style="display:none;"><i class="fas fa-sliders-h"></i> Configuración</a>
+                <button id="btn-logout-dash" class="profile-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+              </div>
+            </div>
           </div>
         </div>
         <div id="main-content-area" class="main-content-area"></div>
@@ -47,20 +54,31 @@ export async function initProfessionalView(main) {
     </div>
   `;
 
-  // ── Logout ──────────────────────────────────────────
+  // Menú de perfil desplegable
+  const trigger = document.getElementById('profile-menu-trigger');
+  const dropdown = document.getElementById('profile-dropdown');
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('hidden');
+  });
+  document.addEventListener('click', () => {
+    if (!dropdown.classList.contains('hidden')) {
+      dropdown.classList.add('hidden');
+    }
+  });
+  dropdown.addEventListener('click', (e) => e.stopPropagation());
+
   document.getElementById('btn-logout-dash').addEventListener('click', () => {
     document.body.classList.remove('dashboard-mode');
-    logout();                       // limpia localStorage
-    window.location.hash = '/login';
+    logout();
+    window.location.hash = '/home';
     window.location.reload();
   });
 
-  // Cargar clientes iniciales
   const clients = await loadClients();
   const sidebarList = document.getElementById('sidebar-client-list');
   const mainContent = document.getElementById('main-content-area');
 
-  // Función para refrescar sidebar
   refreshSidebarFn = async (filter = '') => {
     const allClients = await loadClients();
     const filtered = filter
@@ -69,32 +87,25 @@ export async function initProfessionalView(main) {
     renderSidebarClients(sidebarList, filtered);
   };
 
-  // Renderizar lista en sidebar
   renderSidebarClients(sidebarList, clients);
 
-  // Evento clic en sidebar (seleccionar cliente)
   sidebarList.addEventListener('click', async (e) => {
     const item = e.target.closest('.sidebar-client-item');
     if (!item) return;
     const clientId = item.dataset.id;
     setSelectedClientId(clientId);
-    // Marcar como seleccionado
     document.querySelectorAll('.sidebar-client-item').forEach(el => el.classList.remove('selected'));
     item.classList.add('selected');
-    // Cargar historial en área principal
     await loadClientHistory(clientId, mainContent);
   });
 
-  // Botón nuevo cliente
   document.getElementById('btn-new-client').addEventListener('click', () => openNewClientModal());
 
-  // Búsqueda en el header
   const searchInput = document.getElementById('dashboard-search');
   searchInput.addEventListener('input', debounce(async (e) => {
     await refreshSidebarFn(e.target.value);
   }, 300));
 
-  // Si no hay cliente seleccionado, mostrar mensaje de bienvenida
   mainContent.innerHTML = `
     <div class="empty-dashboard">
       <i class="fas fa-cut"></i>
@@ -104,7 +115,6 @@ export async function initProfessionalView(main) {
   `;
 }
 
-// ── Renderizar sidebar con clientes ──
 function renderSidebarClients(container, clients) {
   if (clients.length === 0) {
     container.innerHTML = `<p style="color:#999; text-align:center;">Sin clientes</p>`;
@@ -115,15 +125,20 @@ function renderSidebarClients(container, clients) {
     return `
       <div class="sidebar-client-item" data-id="${escapeHtml(c.id)}">
         <div class="client-initials">${initials}</div>
-        <span class="client-name-sidebar">${escapeHtml(c.name)}</span>
+        <div class="client-name-sidebar">
+          <span>${escapeHtml(c.name)}</span>
+          <small class="client-phone-sidebar">${escapeHtml(c.phone)}</small>
+        </div>
       </div>
     `;
   }).join('');
   container.innerHTML = html;
 }
 
-// ── Cargar historial de servicios en área principal ──
 async function loadClientHistory(clientId, container) {
+  // Mostrar skeletons inmediatamente
+  showSkeletonCards(container, 3);
+
   const client = await getClientById(clientId);
   if (!client) {
     container.innerHTML = `<p>Cliente no encontrado.</p>`;
@@ -132,64 +147,56 @@ async function loadClientHistory(clientId, container) {
   const services = await getServicesByClientId(clientId);
   const sorted = [...services].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  let html = `
+  const servicesHtml = sorted.length === 0 
+    ? `<div class="empty-state"><i class="fas fa-cut fa-3x"></i><p>${t('noServices')}</p></div>`
+    : sorted.map(s => renderServiceCardDashboard(s)).join('');
+
+  const toggleId = `toggle-${clientId}`;
+  container.innerHTML = `
     <div class="history-header">
       <div class="history-service-count">${services.length} servicio(s) registrado(s)</div>
       <h2 class="history-title">Historial de Servicio</h2>
       <p class="history-client-name">Cliente: ${escapeHtml(client.name)}</p>
+      <p class="history-client-phone"><i class="fas fa-phone-alt"></i> ${escapeHtml(client.phone)}</p>
+      <a href="https://wa.me/${client.phone.replace(/\D/g,'')}" class="whatsapp-link" style="display:none;" target="_blank" rel="noopener noreferrer" aria-label="Enviar mensaje por WhatsApp">
+        <i class="fab fa-whatsapp"></i> Contactar
+      </a>
       <div class="history-divider"></div>
+      <button class="toggle-services-btn" data-target="${toggleId}" aria-expanded="true">
+        <i class="fas fa-chevron-up"></i> <span>Ocultar servicios</span>
+      </button>
     </div>
-    <div class="service-cards-container">
-  `;
-
-  sorted.forEach(service => {
-    html += `
-      <div class="service-card-dashboard" data-service-id="${escapeHtml(service.id)}">
-        <div class="service-card-header">
-          <span class="service-date">${formatDateSpanish(service.date)}</span>
-          <span class="service-type-badge">${escapeHtml(service.type)}</span>
-        </div>
-        <div class="service-images">
-          <div class="image-card">
-            <div class="image-label">ANTES</div>
-            ${service.beforeImg 
-              ? `<img src="${escapeHtml(service.beforeImg)}" alt="Antes" />`
-              : '<div class="image-placeholder">Sin foto</div>'}
-          </div>
-          <div class="image-card">
-            <div class="image-label">DESPUÉS</div>
-            ${service.afterImg 
-              ? `<img src="${escapeHtml(service.afterImg)}" alt="Después" />`
-              : '<div class="image-placeholder">Sin foto</div>'}
-          </div>
-        </div>
-        ${service.notes ? `
-        <div class="service-notes-dashboard">
-          <div class="notes-bar"></div>
-          <div class="notes-text">${escapeHtml(service.notes)}</div>
-        </div>` : ''}
-        <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <button class="btn-edit-service-dash" data-id="${escapeHtml(service.id)}" style="background: none; border: 1px solid #ddd; border-radius: 6px; padding: 4px 12px; cursor:pointer;"><i class="fas fa-edit"></i> Editar</button>
-          <button class="btn-delete-service-dash" data-id="${escapeHtml(service.id)}" style="background: none; border: 1px solid #E53935; color: #E53935; border-radius: 6px; padding: 4px 12px; cursor:pointer;"><i class="fas fa-trash"></i> Eliminar</button>
+    <div id="${toggleId}" class="services-container">
+      ${servicesHtml}
+      <div class="add-service-card" id="add-service-area">
+        <div class="add-service-card-content">
+          <i class="fas fa-plus-circle fa-2x"></i>
+          <span>Agregar nuevo servicio</span>
         </div>
       </div>
-    `;
-  });
-
-  html += `
-    <div class="add-service-area" id="add-service-area">
-      <span class="add-service-icon">➕</span>
-      <span class="add-service-text">Agregar servicio</span>
-    </div>
     </div>
   `;
 
-  container.innerHTML = html;
+  // Toggle de servicios
+  const toggleBtn = container.querySelector('.toggle-services-btn');
+  const servicesContainer = document.getElementById(toggleId);
+  toggleBtn.addEventListener('click', () => {
+    const isVisible = !servicesContainer.classList.contains('hidden');
+    if (isVisible) {
+      servicesContainer.classList.add('hidden');
+      toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> <span>Mostrar servicios</span>';
+      toggleBtn.setAttribute('aria-expanded', 'false');
+    } else {
+      servicesContainer.classList.remove('hidden');
+      toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> <span>Ocultar servicios</span>';
+      toggleBtn.setAttribute('aria-expanded', 'true');
+    }
+  });
 
   // Evento para agregar servicio
   document.getElementById('add-service-area').addEventListener('click', () => openNewServiceModal());
 
-  // Eventos para editar/eliminar servicios (delegación)
+  // Eventos para editar/eliminar servicios
   container.querySelectorAll('.btn-edit-service-dash').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -204,14 +211,66 @@ async function loadClientHistory(clientId, container) {
   });
 }
 
-// ── Formato de fecha en español ──
+function renderServiceCardDashboard(service) {
+  const images = [];
+  if (service.beforeImg) images.push(service.beforeImg);
+  if (service.afterImg) images.push(service.afterImg);
+  if (service.afterLateralImg) images.push(service.afterLateralImg);
+  const imagesJson = escapeHtml(JSON.stringify(images));
+  const beforeIdx = images.indexOf(service.beforeImg);
+  const afterIdx = images.indexOf(service.afterImg);
+  const lateralIdx = images.indexOf(service.afterLateralImg);
+
+  return `
+    <div class="service-card-dashboard" data-service-id="${escapeHtml(service.id)}">
+      <div class="service-card-header">
+        <span class="service-date">${formatDateSpanish(service.date)}</span>
+        <span class="service-type-badge">${escapeHtml(service.type)}</span>
+      </div>
+      <div class="service-images-grid" data-images='${imagesJson}'>
+        <div class="image-card image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}">
+          <div class="image-label">ANTES</div>
+          ${service.beforeImg 
+            ? `<img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" />`
+            : '<div class="image-placeholder">Sin foto</div>'}
+        </div>
+        <div class="image-card image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}">
+          <div class="image-label">DESPUÉS FRONTAL</div>
+          ${service.afterImg 
+            ? `<img src="${escapeHtml(service.afterImg)}" alt="Después frontal" loading="lazy" />`
+            : '<div class="image-placeholder">Sin foto</div>'}
+        </div>
+        <div class="image-card image-item" data-index="${lateralIdx >= 0 ? lateralIdx : 0}">
+          <div class="image-label">DESPUÉS LATERAL</div>
+          ${service.afterLateralImg 
+            ? `<img src="${escapeHtml(service.afterLateralImg)}" alt="Después lateral" loading="lazy" />`
+            : '<div class="image-placeholder">Sin foto</div>'}
+        </div>
+      </div>
+      ${service.notes ? `
+      <div class="service-notes-dashboard">
+        <div class="notes-bar"></div>
+        <div class="notes-text">${escapeHtml(service.notes)}</div>
+      </div>` : ''}
+      <div class="service-actions-dashboard">
+        <button class="btn-edit-service-dash" data-id="${escapeHtml(service.id)}">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="btn-delete-service-dash" data-id="${escapeHtml(service.id)}">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function formatDateSpanish(dateStr) {
   const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const d = new Date(dateStr);
   return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// ── CRUD de cliente y servicios (sin cambios, pero se incluyen para completitud) ──
+// ── CRUD de cliente y servicios ──
 
 async function openNewClientModal() {
   showModal('Nuevo Cliente', buildNewClientForm());
@@ -288,17 +347,21 @@ async function openNewServiceModal() {
     showError('Selecciona un cliente primero.');
     return;
   }
-  const { before, after } = getBeforeAfterPlaceholders();
-  showModal('Agregar Servicio', buildNewServiceForm(before, after));
+  const placeholders = getBeforeAfterPlaceholders();
+  showModal('Agregar Servicio', buildNewServiceForm(placeholders.beforeImg, placeholders.afterImg, placeholders.afterLateralImg));
   const form = document.getElementById('new-service-form');
-  let currentBefore = before, currentAfter = after;
+  let currentBefore = placeholders.beforeImg;
+  let currentAfter = placeholders.afterImg;
+  let currentLateral = placeholders.afterLateralImg;
 
   document.getElementById('btn-regenerate-images').addEventListener('click', () => {
     const newImgs = getBeforeAfterPlaceholders();
-    currentBefore = newImgs.before;
-    currentAfter = newImgs.after;
+    currentBefore = newImgs.beforeImg;
+    currentAfter = newImgs.afterImg;
+    currentLateral = newImgs.afterLateralImg;
     document.getElementById('preview-before').src = currentBefore;
-    document.getElementById('preview-after').src = currentAfter;
+    document.getElementById('preview-after-frontal').src = currentAfter;
+    document.getElementById('preview-after-lateral').src = currentLateral;
   });
 
   form.addEventListener('submit', async (e) => {
@@ -316,10 +379,10 @@ async function openNewServiceModal() {
       date, type, notes,
       beforeImg: currentBefore,
       afterImg: currentAfter,
+      afterLateralImg: currentLateral,
     };
     await addService(selectedClientId, service);
     hideModal();
-    // Refrescar historial
     const mainContent = document.getElementById('main-content-area');
     await loadClientHistory(selectedClientId, mainContent);
     showSuccess('Servicio agregado');

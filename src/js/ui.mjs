@@ -2,10 +2,27 @@ import { loadClients, getClientByPhone, getClientById } from "./storage.mjs";
 import { getServicesByClientId } from "./serviceManager.mjs";
 import { escapeHtml, formatDate } from "./utils.mjs";
 import { t } from "./i18n.mjs";
+import { openLightbox } from "./lightbox.mjs";
 
 let lastFocusedElement = null;
 
 export function renderServiceCard(service, editable = false) {
+  const images = [];
+  if (service.beforeImg) images.push(service.beforeImg);
+  if (service.afterImg) images.push(service.afterImg);
+  if (service.afterLateralImg) images.push(service.afterLateralImg);
+  
+  const imagesJson = escapeHtml(JSON.stringify(images));
+
+  const lateralImg = service.afterLateralImg || '';
+  const lateralHtml = lateralImg
+    ? `<div class="image-item" data-index="${images.indexOf(lateralImg)}"><small>Después lateral</small><img src="${escapeHtml(lateralImg)}" alt="Después lateral" loading="lazy" /></div>`
+    : `<div class="image-item"><small>Después lateral</small><div class="image-placeholder-small">Sin foto</div></div>`;
+
+  const beforeIdx = images.indexOf(service.beforeImg);
+  const afterIdx = images.indexOf(service.afterImg);
+  const lateralIdx = images.indexOf(service.afterLateralImg);
+
   return `
     <div class="card service-card fade-in" data-service-id="${escapeHtml(service.id)}" role="article" aria-label="Servicio ${escapeHtml(service.type)} del ${escapeHtml(service.date)}">
       <div class="service-header">
@@ -13,9 +30,10 @@ export function renderServiceCard(service, editable = false) {
         <span>${escapeHtml(service.date)}</span>
       </div>
       <p>${escapeHtml(service.notes)}</p>
-      <div class="image-pair">
-        <div><small>Antes</small><img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" /></div>
-        <div><small>Después</small><img src="${escapeHtml(service.afterImg)}" alt="Después" loading="lazy" /></div>
+      <div class="image-pair" data-images='${imagesJson}'>
+        <div class="image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}"><small>Antes</small><img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" /></div>
+        <div class="image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}"><small>Después frontal</small><img src="${escapeHtml(service.afterImg)}" alt="Después frontal" loading="lazy" /></div>
+        ${lateralHtml}
       </div>
       ${editable ? `
       <div class="service-actions">
@@ -26,12 +44,6 @@ export function renderServiceCard(service, editable = false) {
   `;
 }
 
-/**
- * Renderiza la lista de clientes. Recibe el array de clientes ya cargado.
- * @param {HTMLElement} container
- * @param {Array} clients
- * @param {string} [filterText=""]
- */
 export function renderClientList(container, clients, filterText = "") {
   const filtered = filterText
     ? clients.filter(c =>
@@ -44,8 +56,8 @@ export function renderClientList(container, clients, filterText = "") {
     container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-users fa-3x"></i>
-        <p>No hay clientes registrados.</p>
-        <p class="empty-hint">Agrega tu primer cliente con el botón "Nuevo Cliente".</p>
+        <p>${t('noClients')}</p>
+        <p class="empty-hint">${t('emptyHint')}</p>
       </div>`;
     return;
   }
@@ -79,8 +91,8 @@ export async function renderClientServices(clientId, container) {
     container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-cut fa-3x"></i>
-        <p>Este cliente no tiene servicios registrados.</p>
-        <p class="empty-hint">Usa "Agregar Servicio" para añadir uno.</p>
+        <p>${t('noServices')}</p>
+        <p class="empty-hint">${t('addServiceHint')}</p>
       </div>`;
     return;
   }
@@ -94,7 +106,7 @@ export async function renderClientHistory(phone, container) {
     container.innerHTML = `
       <div class="empty-state">
         <i class="fas fa-history fa-3x"></i>
-        <p>No tienes servicios registrados aún.</p>
+        <p>${t('noHistory')}</p>
       </div>`;
     return;
   }
@@ -112,17 +124,17 @@ export async function renderSharedView(clientId, container) {
   const sorted = [...services].sort((a, b) => new Date(b.date) - new Date(a.date));
   const html = `
     <div class="shared-banner" role="alert">
-      <i class="fas fa-clock"></i> Vista temporal – Este enlace expirará
+      <i class="fas fa-clock"></i> ${t('sharedBanner')}
     </div>
-    <h2>Historial de ${escapeHtml(client.name)}</h2>
+    <h2>${t('historyOf')} ${escapeHtml(client.name)}</h2>
     ${sorted.length === 0
-      ? `<div class="empty-state"><i class="fas fa-cut fa-3x"></i><p>Sin servicios registrados.</p></div>`
+      ? `<div class="empty-state"><i class="fas fa-cut fa-3x"></i><p>${t('noServices')}</p></div>`
       : sorted.map(s => renderServiceCard(s, false)).join("")}
   `;
   container.innerHTML = html;
 }
 
-// ─────────────────────── MODAL GENÉRICO ───────────────────────
+// ── MODAL GENÉRICO ──
 export function showModal(title, contentHtml) {
   const overlay = document.getElementById("modal-overlay");
   const body = document.getElementById("modal-body");
@@ -179,11 +191,11 @@ export function showConfirmModal(message) {
     const content = `
       <p>${escapeHtml(message)}</p>
       <div class="confirm-actions">
-        <button id="confirm-yes" class="confirm-btn confirm-yes">Sí, eliminar</button>
-        <button id="confirm-no" class="confirm-btn confirm-no">Cancelar</button>
+        <button id="confirm-yes" class="confirm-btn confirm-yes">${t('yes')}</button>
+        <button id="confirm-no" class="confirm-btn confirm-no">${t('cancel')}</button>
       </div>
     `;
-    showModal('Confirmar acción', content);
+    showModal(t('confirmTitle'), content);
     document.getElementById('confirm-yes').addEventListener('click', () => {
       hideModal();
       resolve(true);
@@ -193,4 +205,61 @@ export function showConfirmModal(message) {
       resolve(false);
     });
   });
+}
+
+// ── LIGHTBOX DELEGATION ──
+export function initLightboxDelegation() {
+  document.addEventListener('click', (e) => {
+    const imgElement = e.target.closest('.image-item img');
+    if (!imgElement) return;
+    const imageItem = imgElement.closest('.image-item');
+    if (!imageItem) return;
+    const imagePair = imageItem.closest('.image-pair, .service-images-grid');
+    if (!imagePair) return;
+    
+    const imagesJson = imagePair.getAttribute('data-images');
+    if (!imagesJson) return;
+    try {
+      const images = JSON.parse(imagesJson);
+      if (images.length === 0) return;
+      const index = parseInt(imageItem.getAttribute('data-index'), 10) || 0;
+      openLightbox(images, index);
+    } catch (err) {
+      // No abrir lightbox si falla el parse
+    }
+  });
+}
+
+// ── SKELETON LOADERS ──
+/**
+ * Muestra tarjetas de skeleton mientras se cargan los servicios reales.
+ * @param {HTMLElement} container - Contenedor donde se insertarán los skeletons.
+ * @param {number} count - Número de skeletons a mostrar (por defecto 3).
+ */
+export function showSkeletonCards(container, count = 3) {
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html += `
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <div class="skeleton skeleton-date"></div>
+          <div class="skeleton skeleton-badge"></div>
+        </div>
+        <div class="skeleton-images">
+          <div class="skeleton skeleton-img"></div>
+          <div class="skeleton skeleton-img"></div>
+          <div class="skeleton skeleton-img"></div>
+        </div>
+        <div class="skeleton-notes">
+          <div class="skeleton skeleton-notes-bar"></div>
+          <div class="skeleton skeleton-notes-text"></div>
+        </div>
+        <div class="skeleton-actions">
+          <div class="skeleton skeleton-btn"></div>
+          <div class="skeleton skeleton-btn"></div>
+        </div>
+      </div>
+    `;
+  }
+  container.innerHTML = html;
 }

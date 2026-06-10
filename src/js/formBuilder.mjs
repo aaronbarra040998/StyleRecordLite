@@ -29,7 +29,7 @@ export function buildEditClientForm(client) {
   `;
 }
 
-export function buildNewServiceForm(beforeImg, afterImg) {
+export function buildNewServiceForm(beforeImg, afterImg, afterLateralImg) {
   return `
     <form id="new-service-form">
       <label>Tipo de servicio:</label>
@@ -47,9 +47,10 @@ export function buildNewServiceForm(beforeImg, afterImg) {
       <div class="field-error" id="error-service-date"></div>
       <label>Notas:</label>
       <textarea id="service-notes" rows="3"></textarea>
-      <div class="image-preview">
+      <div class="image-preview-grid">
         <div><small>Antes</small><img src="${escapeHtml(beforeImg)}" id="preview-before" /></div>
-        <div><small>Después</small><img src="${escapeHtml(afterImg)}" id="preview-after" /></div>
+        <div><small>Después frontal</small><img src="${escapeHtml(afterImg)}" id="preview-after-frontal" /></div>
+        <div><small>Después lateral</small><img src="${escapeHtml(afterLateralImg)}" id="preview-after-lateral" /></div>
       </div>
       <button type="button" id="btn-regenerate-images">Generar otras imágenes</button>
       <button type="submit">Guardar Servicio</button>

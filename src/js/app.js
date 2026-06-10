@@ -2,19 +2,23 @@ import { loadHeaderFooter } from "./utils.mjs";
 import { isAuthenticated, getRole, logout } from "./auth.mjs";
 import { cleanExpiredTokens } from "./shareProfile.mjs";
 import { createRouter } from "./router.mjs";
+import { initHomeView } from "./controllers/homeController.mjs";
+import { initRoleView } from "./controllers/roleController.mjs";
 import { initLoginView } from "./controllers/loginController.mjs";
 import { initProfessionalView } from "./controllers/professionalController.mjs";
 import { initClientView } from "./controllers/clientController.mjs";
 import { initSharedView } from "./controllers/sharedController.mjs";
-import { hideModal } from "./ui.mjs";
+import { initRegisterView } from "./controllers/registerController.mjs"; // Fase 7
+import { hideModal, initLightboxDelegation } from "./ui.mjs";
 import { t } from "./i18n.mjs";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadHeaderFooter();
   cleanExpiredTokens();
+  initLightboxDelegation(); // Fase 5: lightbox global
 
   // ========================================================
-  // Offline banner (sigue siendo útil aunque el SW lo gestione el plugin)
+  // Offline banner
   // ========================================================
   const offlineBanner = document.createElement('div');
   offlineBanner.id = 'offline-banner';
@@ -26,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener('offline', () => offlineBanner.classList.remove('hidden'));
 
   // ========================================================
-  // Configuración del modal (fuera de main, no se borra al navegar)
+  // Configuración del modal
   // ========================================================
   const modalClose = document.getElementById("modal-close");
   const modalOverlay = document.getElementById("modal-overlay");
@@ -35,18 +39,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target === e.currentTarget) hideModal();
   });
 
-  // Botón de logout genérico
+  // Botón de logout genérico (header público)
   const btnLogout = document.getElementById("btn-logout");
   if (btnLogout) {
     btnLogout.addEventListener("click", () => {
       logout();
-      window.location.hash = '/login';
+      window.location.hash = '/home';
       window.location.reload();
     });
   }
 
   // ========================================================
-  // Detección de enlace compartido (token en query)
+  // Detección de enlace compartido
   // ========================================================
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get("token");
@@ -64,48 +68,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   const router = createRouter();
   const main = document.querySelector("main");
 
+  // Público: Home
+  router.addRoute('/home', () => {
+    document.body.classList.remove('dashboard-mode');
+    if (btnLogout) btnLogout.style.display = 'none';
+    initHomeView(main);
+  });
+
+  // Público: Selección de rol
+  router.addRoute('/rol', () => {
+    document.body.classList.remove('dashboard-mode');
+    if (btnLogout) btnLogout.style.display = 'none';
+    initRoleView(main);
+  });
+
+  // Público: Login (con parámetro ?role=...)
   router.addRoute('/login', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initLoginView(main);
   });
 
+  // Público: Registro profesional (Fase 7)
+  router.addRoute('/register', () => {
+    document.body.classList.remove('dashboard-mode');
+    if (btnLogout) btnLogout.style.display = 'none';
+    initRegisterView(main);
+  });
+
+  // Protegido: Panel profesional
   router.addRoute('/professional', async () => {
     if (!isAuthenticated() || getRole() !== 'professional') {
-      router.navigate('/login');
+      router.navigate('/login?role=professional');
       return;
     }
     await initProfessionalView(main);
   });
 
+  // Protegido: Panel cliente
   router.addRoute('/client', async () => {
     document.body.classList.remove('dashboard-mode');
     if (!isAuthenticated() || getRole() !== 'client') {
-      router.navigate('/login');
+      router.navigate('/login?role=client');
       return;
     }
     if (btnLogout) btnLogout.style.display = 'block';
     await initClientView(main);
   });
 
-  router.addRoute('*', () => router.navigate('/login'));
-
-  // Redirigir si ya está autenticado
-  if (isAuthenticated()) {
-    const role = getRole();
-    if (role === 'professional') {
-      router.navigate('/professional');
-    } else if (role === 'client') {
-      router.navigate('/client');
-    } else {
-      router.navigate('/login');
-    }
-  }
+  // Ruta no encontrada → home
+  router.addRoute('*', () => router.navigate('/home'));
 
   router.start();
 });
 
-// Función auxiliar para navegación desde otros módulos
 export function navigateTo(hash) {
   window.location.hash = hash;
 }
