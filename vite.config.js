@@ -1,10 +1,11 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   root: "src/",
   base: "/StyleRecordLite/",
-  publicDir: "../public", 
+  publicDir: "../public",
   build: {
     outDir: "../docs",
     rollupOptions: {
@@ -13,4 +14,17 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{html,css,js,svg,png,ico,woff2}'],
+        // Opciones para evitar cachés viejas y tomar control rápido
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+      },
+      manifest: false,
+    })
+  ]
 });

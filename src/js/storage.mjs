@@ -1,37 +1,108 @@
-// Clave única para los clientes
-const CLIENTS_KEY = "sr-clients";
+/**
+ * Capa de persistencia de clientes.
+ * Utiliza IndexedDB a través del módulo db.mjs para mayor capacidad y robustez.
+ * Todas las operaciones son asíncronas y devuelven promesas.
+ *
+ * @module storage
+ */
 
-export function loadClients() {
-  const data = localStorage.getItem(CLIENTS_KEY);
-  return data ? JSON.parse(data) : [];
-}
+import * as db from './db.mjs';
 
-export function saveClients(clients) {
-  localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
-}
-
-// Funciones auxiliares específicas
-export function getClientByPhone(phone) {
-  const clients = loadClients();
-  return clients.find(c => c.phone === phone);
-}
-
-export function addClient(client) {
-  const clients = loadClients();
-  clients.push(client);
-  saveClients(clients);
-}
-
-export function updateClient(updatedClient) {
-  const clients = loadClients();
-  const index = clients.findIndex(c => c.id === updatedClient.id);
-  if (index !== -1) {
-    clients[index] = updatedClient;
-    saveClients(clients);
+/**
+ * Carga todos los clientes desde la base de datos.
+ * @returns {Promise<Array>} Array de objetos cliente
+ */
+export async function loadClients() {
+  try {
+    return await db.loadClients();
+  } catch (error) {
+    console.error('Error al cargar clientes:', error);
+    return [];
   }
 }
 
-export function deleteClient(id) {
-  const clients = loadClients().filter(c => c.id !== id);
-  saveClients(clients);
+/**
+ * Guarda un array completo de clientes en la base de datos.
+ * Reemplaza todos los existentes.
+ * @param {Array} clients - Array de objetos cliente
+ * @returns {Promise<boolean>} true si se guardó correctamente
+ */
+export async function saveClients(clients) {
+  try {
+    await db.saveClients(clients);
+    return true;
+  } catch (error) {
+    console.error('Error al guardar clientes:', error);
+    return false;
+  }
+}
+
+/**
+ * Busca un cliente por número de teléfono.
+ * @param {string} phone - Número de teléfono exacto
+ * @returns {Promise<Object|undefined>} Cliente encontrado o undefined
+ */
+export async function getClientByPhone(phone) {
+  const clients = await loadClients();
+  return clients.find(c => c.phone === phone);
+}
+
+/**
+ * Busca un cliente por su ID.
+ * @param {string} id - Identificador único del cliente
+ * @returns {Promise<Object|undefined>} Cliente encontrado o undefined
+ */
+export async function getClientById(id) {
+  // Podríamos optimizar con db.getClientById(id), pero por consistencia usamos loadClients.
+  const clients = await loadClients();
+  return clients.find(c => c.id === id);
+}
+
+/**
+ * Agrega un nuevo cliente a la base de datos.
+ * @param {Object} client - Objeto cliente con id único y demás propiedades
+ * @returns {Promise<boolean>} true si se insertó correctamente
+ */
+export async function addClient(client) {
+  try {
+    await db.addClient(client);
+    return true;
+  } catch (error) {
+    console.error('Error al agregar cliente:', error);
+    return false;
+  }
+}
+
+/**
+ * Actualiza los datos de un cliente existente.
+ * @param {string} id - ID del cliente a modificar
+ * @param {Object} updatedData - Campos a actualizar (ej: { name, phone })
+ * @returns {Promise<boolean>} true si se actualizó correctamente
+ */
+export async function updateClient(id, updatedData) {
+  try {
+    const success = await db.updateClient(id, updatedData);
+    if (!success) {
+      console.warn(`Cliente con id ${id} no encontrado para actualizar.`);
+    }
+    return success;
+  } catch (error) {
+    console.error('Error al actualizar cliente:', error);
+    return false;
+  }
+}
+
+/**
+ * Elimina un cliente y todos sus servicios asociados.
+ * @param {string} id - ID del cliente a eliminar
+ * @returns {Promise<boolean>} true si se eliminó correctamente
+ */
+export async function deleteClient(id) {
+  try {
+    await db.deleteClient(id);
+    return true;
+  } catch (error) {
+    console.error('Error al eliminar cliente:', error);
+    return false;
+  }
 }
