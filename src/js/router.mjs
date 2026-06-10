@@ -31,6 +31,10 @@ export function createRouter() {
   return new Router();
 }
 
+/**
+ * Función utilitaria para navegar a una ruta desde cualquier lugar.
+ * @param {string} hash - ruta a la que navegar (ej. '/login', '/professional')
+ */
 export function navigateTo(hash) {
   window.location.hash = hash;
 }

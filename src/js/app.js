@@ -1,7 +1,7 @@
 import { loadHeaderFooter } from "./utils.mjs";
 import { isAuthenticated, getRole, logout } from "./auth.mjs";
 import { cleanExpiredTokens } from "./shareProfile.mjs";
-import { createRouter, navigateTo } from "./router.mjs";   // importamos navigateTo desde aquí
+import { createRouter } from "./router.mjs";
 import { initLoginView } from "./controllers/loginController.mjs";
 import { initProfessionalView } from "./controllers/professionalController.mjs";
 import { initClientView } from "./controllers/clientController.mjs";
@@ -13,23 +13,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadHeaderFooter();
   cleanExpiredTokens();
 
-  // Service Worker (solo producción)
+  // ========================================================
+  // Service Worker con Workbox (solo en producción)
+  // ========================================================
   if ('serviceWorker' in navigator && import.meta.env.PROD) {
     import('workbox-window').then(({ Workbox }) => {
       const wb = new Workbox(import.meta.env.BASE_URL + 'sw.js');
+
+      // Mostrar aviso de actualización cuando haya nueva versión esperando
       wb.addEventListener('waiting', () => {
         if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
           wb.messageSkipWaiting();
         }
       });
+
+      // Recargar la página cuando el nuevo SW tome el control
       wb.addEventListener('controlling', () => {
         window.location.reload();
       });
+
       wb.register();
     }).catch(err => console.error('Workbox no se pudo cargar:', err));
   }
 
-  // Banner offline
+  // ========================================================
+  // Offline banner
+  // ========================================================
   const offlineBanner = document.createElement('div');
   offlineBanner.id = 'offline-banner';
   offlineBanner.className = 'offline-banner hidden';
@@ -39,7 +48,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener('online', () => offlineBanner.classList.add('hidden'));
   window.addEventListener('offline', () => offlineBanner.classList.remove('hidden'));
 
-  // Modal
+  // ========================================================
+  // Configuración del modal (fuera de main, no se borra al navegar)
+  // ========================================================
   const modalClose = document.getElementById("modal-close");
   const modalOverlay = document.getElementById("modal-overlay");
   if (modalClose) modalClose.addEventListener("click", hideModal);
@@ -47,17 +58,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target === e.currentTarget) hideModal();
   });
 
-  // Logout genérico
+  // Botón de logout genérico
   const btnLogout = document.getElementById("btn-logout");
   if (btnLogout) {
     btnLogout.addEventListener("click", () => {
       logout();
-      navigateTo('/login');
+      window.location.hash = '/login';
       window.location.reload();
     });
   }
 
+  // ========================================================
   // Detección de enlace compartido (token en query)
+  // ========================================================
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get("token");
   if (token) {
@@ -68,7 +81,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // ========================================================
   // Router
+  // ========================================================
   const router = createRouter();
   const main = document.querySelector("main");
 
@@ -113,5 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   router.start();
 });
 
-// ❌ Eliminamos esta exportación duplicada
-// export function navigateTo(hash) { window.location.hash = hash; }
+// Función auxiliar para navegación desde otros módulos
+export function navigateTo(hash) {
+  window.location.hash = hash;
+}
