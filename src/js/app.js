@@ -14,30 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   cleanExpiredTokens();
 
   // ========================================================
-  // Service Worker con Workbox (solo en producción)
-  // ========================================================
-  if ('serviceWorker' in navigator && import.meta.env.PROD) {
-    import('workbox-window').then(({ Workbox }) => {
-      const wb = new Workbox(import.meta.env.BASE_URL + 'sw.js');
-
-      // Mostrar aviso de actualización cuando haya nueva versión esperando
-      wb.addEventListener('waiting', () => {
-        if (confirm('Nueva versión disponible. ¿Actualizar ahora?')) {
-          wb.messageSkipWaiting();
-        }
-      });
-
-      // Recargar la página cuando el nuevo SW tome el control
-      wb.addEventListener('controlling', () => {
-        window.location.reload();
-      });
-
-      wb.register();
-    }).catch(err => console.error('Workbox no se pudo cargar:', err));
-  }
-
-  // ========================================================
-  // Offline banner
+  // Offline banner (sigue siendo útil aunque el SW lo gestione el plugin)
   // ========================================================
   const offlineBanner = document.createElement('div');
   offlineBanner.id = 'offline-banner';
