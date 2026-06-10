@@ -1,6 +1,6 @@
 import { loadClients, getClientByPhone, getClientById } from "./storage.mjs";
 import { getServicesByClientId } from "./serviceManager.mjs";
-import { escapeHtml, formatDate } from "./utils.mjs";
+import { escapeHtml, formatDate } from "./utils.mjs";   // ✅ unificamos aquí
 import { t } from "./i18n.mjs";
 
 let lastFocusedElement = null;
@@ -26,12 +26,6 @@ export function renderServiceCard(service, editable = false) {
   `;
 }
 
-/**
- * Renderiza la lista de clientes. Recibe el array de clientes ya cargado.
- * @param {HTMLElement} container
- * @param {Array} clients
- * @param {string} [filterText=""]
- */
 export function renderClientList(container, clients, filterText = "") {
   const filtered = filterText
     ? clients.filter(c =>
@@ -122,7 +116,7 @@ export async function renderSharedView(clientId, container) {
   container.innerHTML = html;
 }
 
-// ─────────────────────── MODAL GENÉRICO ───────────────────────
+// ── MODAL ──
 export function showModal(title, contentHtml) {
   const overlay = document.getElementById("modal-overlay");
   const body = document.getElementById("modal-body");

@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   root: "src/",
-  base: "/StyleRecordLite/",
+  base: "/StyleRecordLite/",   // ✅ coincide con el nombre del repo
   publicDir: "../public",
   build: {
     outDir: "../docs",
@@ -19,7 +19,6 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{html,css,js,svg,png,ico,woff2}'],
-        // Opciones para evitar cachés viejas y tomar control rápido
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
