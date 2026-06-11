@@ -1,4 +1,5 @@
 import { t } from "../i18n.mjs";
+import { BASE_URL } from "../utils.mjs";  // ← Importamos BASE_URL
 
 export function initHomeView(container) {
   container.innerHTML = `
@@ -13,7 +14,8 @@ export function initHomeView(container) {
         </button>
       </div>
       <div class="home-hero-image">
-        <img src="/images/hero.png" alt="StyleRecord Lite – Gestión de servicios" />
+        <!-- ✅ Corregido: imgHome.png con BASE_URL -->
+        <img src="${BASE_URL}images/imgHome.png" alt="StyleRecord Lite – Gestión de servicios" />
       </div>
     </section>
 

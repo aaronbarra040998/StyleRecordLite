@@ -2,20 +2,24 @@ import { loginAsProfessional, loginAsClient } from '../auth.mjs';
 import { getClientByPhone } from '../storage.mjs';
 import { showError } from '../toast.mjs';
 import { t } from '../i18n.mjs';
+import countries, { composeFullNumber } from '../countries.mjs';
 
 export function initLoginView(container) {
-  // Extraer parámetro role del hash (ej: #/login?role=professional)
   const hash = window.location.hash;
   const params = new URLSearchParams(hash.split('?')[1] || '');
   const role = params.get('role');
 
   if (!role || (role !== 'professional' && role !== 'client')) {
-    // Si no hay rol válido, redirigir a selección de rol
     window.location.hash = '/rol';
     return;
   }
 
   const isProfessional = role === 'professional';
+
+  // Construir opciones del selector de país (para cliente)
+  const countryOptions = countries
+    .map(c => `<option value="${c.dialCode}" ${c.code === 'PE' ? 'selected' : ''}>${c.flag} ${c.name} (${c.dialCode})</option>`)
+    .join('');
 
   container.innerHTML = `
     <section class="login-view active">
@@ -32,8 +36,12 @@ export function initLoginView(container) {
           </p>
         ` : `
           <form id="login-form">
-            <label>Tu número de teléfono:</label>
-            <input type="tel" id="login-phone" placeholder="+541112345678" required autofocus />
+            <label>Selecciona tu país:</label>
+            <select id="country-select" required style="width:100%; margin-bottom:0.8rem;">
+              ${countryOptions}
+            </select>
+            <label>Número de teléfono (sin código de país):</label>
+            <input type="tel" id="login-phone" placeholder="987654321" required autofocus />
             <button type="submit">Ver historial</button>
           </form>
         `}
@@ -55,10 +63,12 @@ export function initLoginView(container) {
         showError(t('invalidCode'));
       }
     } else {
-      const phone = document.getElementById('login-phone').value.trim();
-      const client = getClientByPhone(phone);
+      const dialCode = document.getElementById('country-select').value;
+      const localNumber = document.getElementById('login-phone').value.trim();
+      const fullNumber = composeFullNumber(dialCode, localNumber);
+      const client = getClientByPhone(fullNumber);
       if (client) {
-        loginAsClient(phone);
+        loginAsClient(fullNumber);
         window.location.hash = '/client';
       } else {
         showError(t('noClient'));

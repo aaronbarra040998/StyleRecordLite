@@ -63,3 +63,6 @@ export function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
 }
+
+// ✅ Nueva exportación: URL base para recursos estáticos
+export const BASE_URL = import.meta.env.BASE_URL;

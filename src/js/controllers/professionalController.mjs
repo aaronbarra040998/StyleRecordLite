@@ -2,7 +2,7 @@ import { loadClients, addClient, updateClient, deleteClient, getClientById } fro
 import { addService, getServicesByClientId, updateService, deleteService } from '../serviceManager.mjs';
 import { validatePhone } from '../numverifyService.mjs';
 import { getBeforeAfterPlaceholders } from '../loremPicsum.mjs';
-import { buildNewClientForm, buildEditClientForm, buildNewServiceForm, buildEditServiceForm } from '../formBuilder.mjs';
+import { buildEditClientForm, buildNewServiceForm, buildEditServiceForm } from '../formBuilder.mjs';
 import { validateClientFormData, validateServiceFormData } from '../validators.mjs';
 import { showError, showSuccess } from '../toast.mjs';
 import { escapeHtml, debounce } from '../utils.mjs';
@@ -10,6 +10,7 @@ import { selectedClientId, setSelectedClientId } from '../state.mjs';
 import { showModal, hideModal, showConfirmModal, showSkeletonCards } from '../ui.mjs';
 import { logout } from '../auth.mjs';
 import { t } from '../i18n.mjs';
+import countries, { composeFullNumber } from '../countries.mjs';  // ← NUEVO
 
 let refreshSidebarFn;
 
@@ -272,20 +273,52 @@ function formatDateSpanish(dateStr) {
 
 // ── CRUD de cliente y servicios ──
 
+/**
+ * Abre el modal para crear un nuevo cliente, ahora con selector de país.
+ */
 async function openNewClientModal() {
-  showModal('Nuevo Cliente', buildNewClientForm());
+  // Construir opciones de países
+  const countryOptions = countries
+    .map(c => `<option value="${c.dialCode}" ${c.code === 'PE' ? 'selected' : ''}>${c.flag} ${c.name} (${c.dialCode})</option>`)
+    .join('');
+
+  const formHtml = `
+    <form id="new-client-form">
+      <label>Nombre completo:</label>
+      <input type="text" id="client-name" placeholder="María García" required />
+      <div class="field-error" id="error-client-name"></div>
+
+      <label>País:</label>
+      <select id="client-country" required style="width:100%; margin-bottom:0.8rem;">
+        ${countryOptions}
+      </select>
+
+      <label>Número de teléfono (sin prefijo):</label>
+      <input type="tel" id="client-phone" placeholder="987654321" required />
+      <div class="field-error" id="error-client-phone"></div>
+
+      <div id="validation-area"></div>
+      <button type="submit" id="validate-btn">Validar y Guardar</button>
+    </form>
+  `;
+
+  showModal('Nuevo Cliente', formHtml);
+
   const form = document.getElementById('new-client-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('client-name').value.trim();
-    const phone = document.getElementById('client-phone').value.trim();
-    const errors = validateClientFormData(name, phone);
+    const dialCode = document.getElementById('client-country').value;
+    const localNumber = document.getElementById('client-phone').value.trim();
+    const fullPhone = composeFullNumber(dialCode, localNumber);
+
+    const errors = validateClientFormData(name, fullPhone);
     displayFormErrors('client', errors);
     if (Object.keys(errors).length > 0) return;
 
     const btn = document.getElementById('validate-btn');
     const validationArea = document.getElementById('validation-area');
-    const existing = (await loadClients()).find(c => c.phone === phone);
+    const existing = (await loadClients()).find(c => c.phone === fullPhone);
     if (existing) {
       validationArea.innerHTML = `<div class="validation-error">El teléfono ya está registrado.</div>`;
       return;
@@ -295,7 +328,7 @@ async function openNewClientModal() {
     validationArea.innerHTML = '';
 
     try {
-      const result = await validatePhone(phone);
+      const result = await validatePhone(fullPhone);  // numverify recibe número completo
       validationArea.innerHTML = `
         <div class="validation-result">
           <i class="fas fa-check-circle"></i> Número válido<br>
@@ -305,7 +338,9 @@ async function openNewClientModal() {
         </div>`;
       const newClient = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-        name, phone, phoneValid: true,
+        name,
+        phone: fullPhone,
+        phoneValid: true,
         phoneDetails: {
           country: result.country_name,
           carrier: result.carrier,
@@ -326,7 +361,11 @@ async function openNewClientModal() {
         document.getElementById('force-save-btn').addEventListener('click', async () => {
           const newClient = {
             id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-            name, phone, phoneValid: false, phoneDetails: null, services: [],
+            name,
+            phone: fullPhone,
+            phoneValid: false,
+            phoneDetails: null,
+            services: [],
           };
           await addClient(newClient);
           hideModal();
