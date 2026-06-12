@@ -13,6 +13,7 @@ import {
 } from '../validators.mjs';
 import { showSuccess } from '../toast.mjs';
 import { escapeHtml } from '../utils.mjs';
+import { getPlaceholderImage } from '../loremPicsum.mjs';
 
 let currentStep = 0;
 const state = {
@@ -28,7 +29,9 @@ const state = {
 
 export function initRegisterView(container) {
   currentStep = 0;
-  Object.keys(state).forEach(k => state[k] = state[k] === false ? false : '');
+  Object.keys(state).forEach(k => {
+    state[k] = (state[k] === false) ? false : '';
+  });
   state.workFromHome = false;
   state.requestLink = false;
   renderStep(container);
@@ -38,113 +41,233 @@ function renderStep(container) {
   const totalSteps = 3;
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
+  const heroImg = getPlaceholderImage(800, 200, 'salon');
+
   container.innerHTML = `
-    <section class="register-view active">
+    <section class="register-view-container fade-in">
+      <!-- Stepper -->
       <div class="stepper">
-        <div class="stepper-progress" style="width: ${progress}%"></div>
+        <div class="stepper-track">
+          <div class="stepper-progress" style="width: ${progress}%"></div>
+        </div>
         <div class="stepper-steps">
-          <div class="stepper-step ${currentStep >= 0 ? 'active' : ''} ${currentStep > 0 ? 'completed' : ''}">1</div>
-          <div class="stepper-step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}">2</div>
-          <div class="stepper-step ${currentStep >= 2 ? 'active' : ''}">3</div>
+          <div class="stepper-step ${currentStep >= 0 ? 'active' : ''} ${currentStep > 0 ? 'completed' : ''}">
+            <div class="step-circle">1</div>
+            <span class="step-label ${currentStep >= 0 ? 'active' : ''}">Perfil</span>
+          </div>
+          <div class="stepper-line ${currentStep >= 1 ? 'active' : ''}"></div>
+          <div class="stepper-step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}">
+            <div class="step-circle">2</div>
+            <span class="step-label ${currentStep >= 1 ? 'active' : ''}">Portafolio</span>
+          </div>
+          <div class="stepper-line ${currentStep >= 2 ? 'active' : ''}"></div>
+          <div class="stepper-step ${currentStep >= 2 ? 'active' : ''}">
+            <div class="step-circle">3</div>
+            <span class="step-label ${currentStep >= 2 ? 'active' : ''}">Verificación</span>
+          </div>
         </div>
       </div>
-      <div class="stepper-content">
-        ${getStepContent(currentStep)}
+
+      <!-- Card del formulario -->
+      <div class="register-card">
+        <div class="register-card-header">
+          <h1 class="register-card-title">${getStepTitle(currentStep)}</h1>
+          <p class="register-card-subtitle">${getStepSubtitle(currentStep)}</p>
+        </div>
+
+        <div class="register-card-body">
+          ${getStepContent(currentStep)}
+        </div>
       </div>
-      <div class="stepper-actions">
-        ${currentStep > 0 ? '<button id="btn-prev" class="btn-prev">Anterior</button>' : ''}
-        <button id="btn-next" class="btn-next">${currentStep === totalSteps - 1 ? 'Finalizar' : 'Siguiente'}</button>
+
+      <!-- Badges de confianza -->
+      <div class="register-trust">
+        <div class="trust-item">
+          <span class="material-symbols-outlined">lock</span>
+          <span>Datos encriptados</span>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <span class="material-symbols-outlined">verified</span>
+          <span>Plataforma Certificada</span>
+        </div>
       </div>
     </section>
   `;
 
-  if (currentStep > 0) {
-    document.getElementById('btn-prev').addEventListener('click', () => {
-      currentStep--;
-      renderStep(container);
+  // Evento del botón Cancelar
+  const cancelBtn = document.getElementById('btn-cancel');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      // Redirigir a selección de rol o home
+      window.location.hash = '/rol';
     });
   }
-  document.getElementById('btn-next').addEventListener('click', () => handleNext(container));
 
-  if (currentStep === 0) attachStep1Listeners();
-  if (currentStep === 1) attachStep2Listeners();
+  // Eventos de navegación
+  if (currentStep > 0) {
+    const prevBtn = document.getElementById('btn-prev');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        currentStep--;
+        renderStep(container);
+      });
+    }
+  }
+  const nextBtn = document.getElementById('btn-next');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => handleNext(container));
+  }
+
+  if (currentStep === 0) attachStep0Listeners();
+  if (currentStep === 1) attachStep1Listeners();
 }
 
-function getStepContent(step) {
+function getStepTitle(step) {
   switch(step) {
-    case 0: return getStep1HTML();
-    case 1: return getStep2HTML();
-    case 2: return getStep3HTML();
+    case 0: return 'Información Profesional';
+    case 1: return 'Detalles del Negocio';
+    case 2: return 'Resumen del Registro';
     default: return '';
   }
 }
 
-function getStep1HTML() {
+function getStepSubtitle(step) {
+  switch(step) {
+    case 0: return 'Completa los detalles de tu especialidad para comenzar a gestionar tu agenda con StyleRecord Lite.';
+    case 1: return state.modality === 'independent' 
+      ? 'Configura los datos de tu actividad independiente.'
+      : 'Vincula tu perfil con la empresa donde trabajas.';
+    case 2: return 'Revisa que toda la información sea correcta antes de finalizar.';
+    default: return '';
+  }
+}
+
+function getStepContent(step) {
+  switch(step) {
+    case 0: return getStep0HTML();
+    case 1: return getStep1HTML();
+    case 2: return getStep2HTML();
+    default: return '';
+  }
+}
+
+function getStep0HTML() {
   return `
-    <h3>Información Profesional</h3>
-    <form id="step1-form" class="stepper-form">
-      <label>Tipo de profesional *</label>
-      <select id="prof-type" required>
-        <option value="">Selecciona...</option>
-        <option value="barbero" ${state.type === 'barbero' ? 'selected' : ''}>Barbero</option>
-        <option value="estilista" ${state.type === 'estilista' ? 'selected' : ''}>Estilista</option>
-        <option value="lashista" ${state.type === 'lashista' ? 'selected' : ''}>Lashista</option>
-        <option value="colorista" ${state.type === 'colorista' ? 'selected' : ''}>Colorista</option>
-        <option value="otros" ${state.type === 'otros' ? 'selected' : ''}>Otros</option>
-      </select>
-      <div class="field-error" id="error-type"></div>
-      <label>Modalidad *</label>
-      <div class="radio-group">
-        <label class="radio-label">
-          <input type="radio" name="modality" value="independent" ${state.modality === 'independent' ? 'checked' : ''}> Independiente
-        </label>
-        <label class="radio-label">
-          <input type="radio" name="modality" value="employed" ${state.modality === 'employed' ? 'checked' : ''}> Empleado
-        </label>
+    <form id="step0-form" class="register-form">
+      <div class="form-group">
+        <label class="form-label" for="prof-type">Tipo de profesional</label>
+        <div class="select-wrapper-register">
+          <select id="prof-type" class="form-select" required>
+            <option value="" disabled ${!state.type ? 'selected' : ''}>Selecciona tu especialidad</option>
+            <option value="barbero" ${state.type === 'barbero' ? 'selected' : ''}>Barbero</option>
+            <option value="estilista" ${state.type === 'estilista' ? 'selected' : ''}>Estilista</option>
+            <option value="lashista" ${state.type === 'lashista' ? 'selected' : ''}>Lashista</option>
+            <option value="colorista" ${state.type === 'colorista' ? 'selected' : ''}>Colorista</option>
+            <option value="otros" ${state.type === 'otros' ? 'selected' : ''}>Otros</option>
+          </select>
+          <span class="material-symbols-outlined select-icon">expand_more</span>
+        </div>
+        <div class="field-error" id="error-type"></div>
       </div>
-      <div class="field-error" id="error-modality"></div>
+
+      <div class="form-group">
+        <label class="form-label">Modalidad de trabajo</label>
+        <div class="radio-cards">
+          <label class="radio-card ${state.modality === 'independent' ? 'selected' : ''}">
+            <input type="radio" name="modality" value="independent" ${state.modality === 'independent' ? 'checked' : ''} class="radio-input" />
+            <span class="material-symbols-outlined radio-icon">person_pin</span>
+            <span class="radio-title">Independiente</span>
+            <span class="radio-desc">Trabajas por cuenta propia o a domicilio.</span>
+          </label>
+          <label class="radio-card ${state.modality === 'employed' ? 'selected' : ''}">
+            <input type="radio" name="modality" value="employed" ${state.modality === 'employed' ? 'checked' : ''} class="radio-input" />
+            <span class="material-symbols-outlined radio-icon">store</span>
+            <span class="radio-title">Empleado</span>
+            <span class="radio-desc">Formas parte del equipo de un salón o clínica.</span>
+          </label>
+        </div>
+        <div class="field-error" id="error-modality"></div>
+      </div>
+
+      <div class="register-decoration">
+        <img src="${getPlaceholderImage(800, 200, 'salon-deco')}" alt="Salón profesional" loading="lazy" />
+        <div class="decoration-overlay"></div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+        <button type="button" id="btn-next" class="btn-gold-gradient">
+          <span>Siguiente</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
     </form>
   `;
 }
 
-function getStep2HTML() {
+function getStep1HTML() {
   if (state.modality === 'independent') {
     return `
-      <h3>Profesional Independiente</h3>
-      <form id="step2-form" class="stepper-form">
-        <label>Nombre del local / Nombre profesional *</label>
-        <input type="text" id="business-name" value="${escapeHtml(state.businessName)}" required />
-        <div class="field-error" id="error-business-name"></div>
-        <label>Dirección</label>
-        <input type="text" id="address" value="${escapeHtml(state.address)}" />
-        <div class="field-error" id="error-address"></div>
+      <form id="step1-form" class="register-form">
+        <div class="form-group">
+          <label class="form-label" for="business-name">Nombre del local / Profesional</label>
+          <input type="text" id="business-name" class="form-input" value="${escapeHtml(state.businessName)}" placeholder="Ej. Estudio Belleza" required />
+          <div class="field-error" id="error-business-name"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="address">Dirección</label>
+          <input type="text" id="address" class="form-input" value="${escapeHtml(state.address)}" placeholder="Dirección del local" />
+          <div class="field-error" id="error-address"></div>
+        </div>
         <label class="checkbox-label">
-          <input type="checkbox" id="work-from-home" ${state.workFromHome ? 'checked' : ''}> Trabajo a domicilio (sin local físico)
+          <input type="checkbox" id="work-from-home" ${state.workFromHome ? 'checked' : ''} />
+          <span class="checkmark"></span>
+          Trabajo a domicilio (sin local físico)
         </label>
+        <div class="form-actions">
+          <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+          <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+          <button type="button" id="btn-next" class="btn-gold-gradient">
+            <span>Siguiente</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
       </form>
     `;
   } else {
     return `
-      <h3>Profesional Empleado</h3>
-      <form id="step2-form" class="stepper-form">
-        <label>Buscar empresa existente</label>
-        <div class="autocomplete-wrapper">
-          <input type="text" id="company-search" placeholder="Nombre de la empresa..." autocomplete="off" />
-          <ul id="company-suggestions" class="autocomplete-list hidden"></ul>
+      <form id="step1-form" class="register-form">
+        <div class="form-group">
+          <label class="form-label">Buscar empresa existente</label>
+          <div class="autocomplete-wrapper">
+            <input type="text" id="company-search" class="form-input" placeholder="Nombre de la empresa..." autocomplete="off" />
+            <ul id="company-suggestions" class="autocomplete-list hidden"></ul>
+          </div>
         </div>
-        <p class="or-divider">o</p>
-        <label>Registrar nueva empresa</label>
-        <input type="text" id="new-company-name" value="${escapeHtml(state.companyName)}" placeholder="Nombre de la empresa" />
-        <div class="field-error" id="error-company-name"></div>
-        <input type="hidden" id="selected-company-id" value="${escapeHtml(state.companyId)}" />
-        <p id="selected-company-display" class="selected-company"></p>
+        <div class="or-divider"><span>o</span></div>
+        <div class="form-group">
+          <label class="form-label" for="new-company-name">Registrar nueva empresa</label>
+          <input type="text" id="new-company-name" class="form-input" value="${escapeHtml(state.companyName)}" placeholder="Nombre de la empresa" />
+          <div class="field-error" id="error-company-name"></div>
+          <input type="hidden" id="selected-company-id" value="${escapeHtml(state.companyId)}" />
+          <p id="selected-company-display" class="selected-company"></p>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+          <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+          <button type="button" id="btn-next" class="btn-gold-gradient">
+            <span>Siguiente</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
       </form>
     `;
   }
 }
 
-function getStep3HTML() {
-  let summary = '<h3>Resumen del registro</h3><ul class="summary-list">';
+function getStep2HTML() {
+  let summary = '<ul class="summary-list">';
   summary += `<li><strong>Tipo:</strong> ${escapeHtml(state.type)}</li>`;
   summary += `<li><strong>Modalidad:</strong> ${state.modality === 'independent' ? 'Independiente' : 'Empleado'}</li>`;
   if (state.modality === 'independent') {
@@ -163,16 +286,31 @@ function getStep3HTML() {
     summary += `<li><strong>Solicitar vinculación:</strong> ${state.requestLink ? 'Sí' : 'No'}</li>`;
   }
   summary += '</ul>';
-  return summary;
+
+  return `
+    <div class="register-form">
+      <div class="summary-box">
+        ${summary}
+      </div>
+      <div class="form-actions">
+        <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+        <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+        <button type="button" id="btn-next" class="btn-gold-gradient">
+          <span>Finalizar</span>
+          <span class="material-symbols-outlined">check</span>
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 async function handleNext(container) {
   if (currentStep === 0) {
-    if (!validateStep1()) return;
+    if (!validateStep0()) return;
     currentStep++;
     renderStep(container);
   } else if (currentStep === 1) {
-    if (!validateStep2()) return;
+    if (!validateStep1()) return;
     currentStep++;
     renderStep(container);
   } else if (currentStep === 2) {
@@ -184,8 +322,8 @@ async function handleNext(container) {
   }
 }
 
-function validateStep1() {
-  const type = document.getElementById('prof-type').value;
+function validateStep0() {
+  const type = document.getElementById('prof-type')?.value;
   const modality = document.querySelector('input[name="modality"]:checked')?.value;
   const errType = validateProfessionalType(type);
   const errModality = validateModality(modality);
@@ -197,11 +335,11 @@ function validateStep1() {
   return true;
 }
 
-function validateStep2() {
+function validateStep1() {
   if (state.modality === 'independent') {
-    const name = document.getElementById('business-name').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const workFromHome = document.getElementById('work-from-home').checked;
+    const name = document.getElementById('business-name')?.value.trim();
+    const address = document.getElementById('address')?.value.trim();
+    const workFromHome = document.getElementById('work-from-home')?.checked || false;
     const errName = validateBusinessName(name);
     let errAddress = null;
     if (!workFromHome) errAddress = validateAddress(address);
@@ -213,8 +351,8 @@ function validateStep2() {
     state.workFromHome = workFromHome;
     return true;
   } else {
-    const companyId = document.getElementById('selected-company-id').value;
-    const newCompanyName = document.getElementById('new-company-name').value.trim();
+    const companyId = document.getElementById('selected-company-id')?.value;
+    const newCompanyName = document.getElementById('new-company-name')?.value.trim();
     if (!companyId && !newCompanyName) {
       document.getElementById('error-company-name').textContent = 'Debes seleccionar una empresa o ingresar un nombre nuevo.';
       return false;
@@ -267,15 +405,24 @@ async function finalizeRegistration() {
   }
 }
 
-function attachStep1Listeners() {}
+// ─── Listeners auxiliares ───
+function attachStep0Listeners() {
+  const radios = document.querySelectorAll('input[name="modality"]');
+  radios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.radio-card').forEach(card => card.classList.remove('selected'));
+      this.closest('.radio-card').classList.add('selected');
+    });
+  });
+}
 
-function attachStep2Listeners() {
+function attachStep1Listeners() {
   if (state.modality === 'employed') {
     const searchInput = document.getElementById('company-search');
     const suggestionsList = document.getElementById('company-suggestions');
     const newCompanyInput = document.getElementById('new-company-name');
     
-    searchInput.addEventListener('input', async (e) => {
+    searchInput?.addEventListener('input', async (e) => {
       const query = e.target.value.trim();
       if (query.length < 2) {
         suggestionsList.classList.add('hidden');
@@ -288,7 +435,7 @@ function attachStep2Listeners() {
       suggestionsList.classList.remove('hidden');
     });
 
-    suggestionsList.addEventListener('click', (e) => {
+    suggestionsList?.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if (!li || !li.dataset.id) return;
       document.getElementById('selected-company-id').value = li.dataset.id;
@@ -299,7 +446,7 @@ function attachStep2Listeners() {
       document.getElementById('error-company-name').textContent = '';
     });
 
-    newCompanyInput.addEventListener('input', () => {
+    newCompanyInput?.addEventListener('input', () => {
       document.getElementById('selected-company-id').value = '';
       document.getElementById('selected-company-display').textContent = '';
       searchInput.value = '';
@@ -309,7 +456,7 @@ function attachStep2Listeners() {
 
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.autocomplete-wrapper')) {
-        suggestionsList.classList.add('hidden');
+        suggestionsList?.classList.add('hidden');
       }
     });
   }

@@ -1,117 +1,117 @@
 /* ============================================================
-   SISTEMA DE DISEÑO GLOBAL – StyleRecord Lite
+   SISTEMA DE DISEÑO – StyleRecord Lite (nuevo branding)
    ============================================================ */
-
 :root {
-  /* ─── Paleta de colores principal ─── */
-  --color-primary: #6A1B9A;          /* Morado principal */
-  --color-primary-light: #7B1FA2;
-  --color-primary-dark: #4A148C;
+  /* ─── Paleta principal ─── */
+  --color-primary: #4800b2;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #6200ee;
+  --color-on-primary-container: #d0beff;
+  --color-primary-fixed: #e8ddff;
+  --color-on-primary-fixed: #22005d;
+  --color-primary-fixed-dim: #cfbdff;
 
-  --color-accent: #F5B342;           /* Dorado de acento */
-  --color-accent-light: #FFB74D;
-  --color-accent-dark: #e0a832;
+  --color-secondary: #735c00;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fed65b;
+  --color-on-secondary-container: #745c00;
+  --color-secondary-fixed: #ffe088;
+  --color-on-secondary-fixed: #241a00;
+  --color-secondary-fixed-dim: #e9c349;
 
-  /* ─── Escala de grises ─── */
-  --color-white: #FFFFFF;
-  --color-gray-50: #F9F9F9;
-  --color-gray-100: #F5F5F5;
-  --color-gray-200: #ECECEC;
-  --color-gray-300: #E0E0E0;
-  --color-gray-400: #CCCCCC;
-  --color-gray-500: #999999;
-  --color-gray-600: #757575;
-  --color-gray-700: #666666;
-  --color-gray-800: #444444;
-  --color-gray-900: #333333;
-  --color-black: #212121;
+  --color-tertiary: #531a90;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #6c37a9;
+  --color-on-tertiary-container: #dbbbff;
+  --color-tertiary-fixed: #eedbff;
+  --color-on-tertiary-fixed: #2a0053;
+  --color-tertiary-fixed-dim: #dab9ff;
 
-  /* ─── Colores de estado ─── */
-  --color-success: #2e7d32;
-  --color-success-light: #e8f5e9;
-  --color-success-border: #4caf50;
+  --color-surface: #fcf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fcf9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0edec;
+  --color-surface-container-high: #ebe7e7;
+  --color-surface-container-highest: #e5e2e1;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #494456;
 
-  --color-warning: #f57c00;
-  --color-warning-light: #fff3e0;
+  --color-background: #fcf9f8;
+  --color-on-background: #1c1b1b;
 
-  --color-error: #E53935;
-  --color-error-light: #ffebee;
+  --color-outline: #7a7488;
+  --color-outline-variant: #cbc3d9;
 
-  --color-info: #6A1B9A;             /* usando primary para info */
-  --color-info-light: #f3e5f5;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-inverse-surface: #313030;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-inverse-primary: #cfbdff;
 
   /* ─── Tipografía ─── */
-  --font-family-heading: 'Poppins', sans-serif;
-  --font-family-body: 'Roboto', sans-serif;
+  --font-headline: 'Montserrat', sans-serif;
+  --font-body: 'Inter', sans-serif;
 
-  --font-size-xs: 0.75rem;    /* 12px */
-  --font-size-sm: 0.875rem;   /* 14px */
-  --font-size-md: 1rem;       /* 16px */
-  --font-size-lg: 1.25rem;    /* 20px */
-  --font-size-xl: 1.5rem;     /* 24px */
-  --font-size-2xl: 2rem;      /* 32px */
-  --font-size-3xl: 2.5rem;    /* 40px */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   --line-height-tight: 1.2;
   --line-height-normal: 1.6;
-  --line-height-relaxed: 1.8;
 
   /* ─── Espaciados ─── */
   --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
+  --space-sm: 12px;
+  --space-md: 24px;
+  --space-lg: 48px;
+  --space-xl: 80px;
+  --space-gutter: 24px;
+  --space-margin-desktop: 40px;
+  --space-margin-mobile: 16px;
 
-  /* ─── Border Radius ─── */
-  --radius-sm: 6px;
-  --radius-md: 8px;      /* Se mantiene cercano al original 8px */
-  --radius-lg: 12px;
-  --radius-xl: 24px;
+  /* ─── Bordes ─── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 
   /* ─── Sombras ─── */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 24px rgba(18,18,18,0.06);
+  --shadow-lg: 0 12px 32px rgba(18,18,18,0.12);
 
   /* ─── Transiciones ─── */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --transition-slow: 0.7s ease;
 
   /* ─── Z-index ─── */
   --z-sidebar: 100;
   --z-modal: 1000;
   --z-toast: 2000;
   --z-offline-banner: 1500;
+  --z-header: 50;
 
-  /* ─── Breakpoints (solo referencia, no se usan en media queries directamente) ─── */
+  /* ─── Breakpoints ─── */
   --bp-sm: 480px;
   --bp-md: 768px;
   --bp-lg: 1024px;
   --bp-xl: 1200px;
-
-  /* ═══════════════════════════════════════════════════════════
-     MAPEO DE VARIABLES ANTIGUAS → NUEVAS (para compatibilidad)
-     ═══════════════════════════════════════════════════════════ */
-  --primary: var(--color-primary);
-  --secondary: var(--color-accent);
-  --bg: var(--color-gray-50);
-  --text: var(--color-black);
-  --text-light: var(--color-gray-600);
-  --danger: var(--color-error);
-  --white: var(--color-white);
-  --font-heading: var(--font-family-heading);
-  --font-body: var(--font-family-body);
-  --shadow: var(--shadow-md);
-  --radius: var(--radius-md);
 }

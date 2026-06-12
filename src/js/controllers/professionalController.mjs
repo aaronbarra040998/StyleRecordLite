@@ -4,71 +4,93 @@ import { validatePhone } from '../numverifyService.mjs';
 import { getBeforeAfterPlaceholders } from '../loremPicsum.mjs';
 import { buildEditClientForm, buildNewServiceForm, buildEditServiceForm } from '../formBuilder.mjs';
 import { validateClientFormData, validateServiceFormData } from '../validators.mjs';
-import { showError, showSuccess } from '../toast.mjs';
+import { showError, showSuccess, showToast } from '../toast.mjs';
 import { escapeHtml, debounce } from '../utils.mjs';
 import { selectedClientId, setSelectedClientId } from '../state.mjs';
-import { showModal, hideModal, showConfirmModal, showSkeletonCards } from '../ui.mjs';
+import { showModal, hideModal, showConfirmModal } from '../ui.mjs';
 import { logout } from '../auth.mjs';
 import { t } from '../i18n.mjs';
-import countries, { composeFullNumber } from '../countries.mjs';  // ← NUEVO
+import countries, { composeFullNumber } from '../countries.mjs';
 
 let refreshSidebarFn;
+let currentSidebarFilter = 'all'; // 'all' o 'withServices'
 
 export async function initProfessionalView(main) {
   document.body.classList.add('dashboard-mode');
 
   main.innerHTML = `
-    <div class="dashboard">
-      <aside class="dashboard-sidebar" id="dashboard-sidebar">
-        <button class="btn-new-client" id="btn-new-client">
-          <i class="fas fa-plus"></i> Nuevo Cliente
-        </button>
-        <div class="recent-clients-title">Clientes Recientes</div>
-        <div class="sidebar-client-list" id="sidebar-client-list"></div>
-      </aside>
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="dashboard-sidebar">
+      <div class="sidebar-brand">
+        <h1 class="sidebar-logo">StyleRecord Lite</h1>
+        <p class="sidebar-subtitle">Gestión de Belleza</p>
+      </div>
 
-      <section class="dashboard-main">
-        <div class="dashboard-header">
-          <div class="dashboard-logo">StyleRecord Lite</div>
-          <div class="dashboard-search">
-            <i class="fas fa-search"></i>
-            <input type="text" id="dashboard-search" placeholder="Buscar cliente..." />
+      <button class="btn-new-client" id="btn-new-client">
+        <span class="material-symbols-outlined">person_add</span>
+        Nuevo Cliente
+      </button>
+
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Dashboard</div>
+        <a class="sidebar-nav-item active" href="#" data-filter="all" id="nav-clientes">
+          <span class="material-symbols-outlined">group</span>
+          <span>Clientes</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" data-filter="withServices" id="nav-servicios">
+          <span class="material-symbols-outlined">content_cut</span>
+          <span>Servicios</span>
+        </a>
+
+        <div class="sidebar-section-label">Clientes Recientes</div>
+        <div class="sidebar-client-list" id="sidebar-client-list"></div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-user-avatar">
+            <span class="material-symbols-outlined">person</span>
           </div>
-          <div class="dashboard-actions">
-            <div class="profile-menu-container">
-              <button class="profile-menu-trigger" id="profile-menu-trigger" aria-label="Menú de perfil">
-                <i class="fas fa-cog"></i>
-              </button>
-              <div class="profile-dropdown hidden" id="profile-dropdown">
-                <div class="profile-info">
-                  <span class="profile-name">Profesional</span>
-                  <span class="profile-role">Administrador</span>
-                </div>
-                <a href="#/configuracion" class="profile-link" style="display:none;"><i class="fas fa-sliders-h"></i> Configuración</a>
-                <button id="btn-logout-dash" class="profile-link"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
-              </div>
-            </div>
+          <span class="sidebar-user-name">Staff #04</span>
+        </div>
+        <button class="sidebar-logout" id="btn-logout-dash" title="Cerrar sesión">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <div class="dashboard-search">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="dashboard-search" placeholder="Buscar cliente..." />
+        </div>
+        <div class="dashboard-header-actions">
+          <button class="header-icon-btn" id="btn-notifications" aria-label="Notificaciones">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="header-icon-btn" id="btn-settings" aria-label="Configuración">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <div class="header-avatar" id="header-avatar">
+            <span class="material-symbols-outlined">person</span>
           </div>
         </div>
-        <div id="main-content-area" class="main-content-area"></div>
-      </section>
+      </header>
+
+      <!-- Content Area -->
+      <div id="main-content-area" class="main-content-area"></div>
     </div>
+
+    <!-- FAB -->
+    <button class="fab" id="fab-add-service" title="Agregar servicio" style="display:none;">
+      <span class="material-symbols-outlined">add</span>
+    </button>
   `;
 
-  // Menú de perfil desplegable
-  const trigger = document.getElementById('profile-menu-trigger');
-  const dropdown = document.getElementById('profile-dropdown');
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdown.classList.toggle('hidden');
-  });
-  document.addEventListener('click', () => {
-    if (!dropdown.classList.contains('hidden')) {
-      dropdown.classList.add('hidden');
-    }
-  });
-  dropdown.addEventListener('click', (e) => e.stopPropagation());
-
+  // Logout
   document.getElementById('btn-logout-dash').addEventListener('click', () => {
     document.body.classList.remove('dashboard-mode');
     logout();
@@ -76,20 +98,62 @@ export async function initProfessionalView(main) {
     window.location.reload();
   });
 
+  // --- Navegación lateral (Clientes / Servicios) ---
+  const navClientes = document.getElementById('nav-clientes');
+  const navServicios = document.getElementById('nav-servicios');
+
+  function setActiveNav(filter) {
+    navClientes.classList.toggle('active', filter === 'all');
+    navServicios.classList.toggle('active', filter === 'withServices');
+  }
+
+  navClientes.addEventListener('click', (e) => {
+    e.preventDefault();
+    currentSidebarFilter = 'all';
+    setActiveNav('all');
+    refreshSidebarFn(document.getElementById('dashboard-search').value);
+  });
+
+  navServicios.addEventListener('click', (e) => {
+    e.preventDefault();
+    currentSidebarFilter = 'withServices';
+    setActiveNav('withServices');
+    refreshSidebarFn(document.getElementById('dashboard-search').value);
+  });
+
+  // --- Icono de Configuración ---
+  document.getElementById('btn-settings').addEventListener('click', () => {
+    showToast('Configuración próximamente', 'info');
+  });
+
+  // --- Notificaciones (placeholder) ---
+  document.getElementById('btn-notifications').addEventListener('click', () => {
+    showToast('No hay notificaciones nuevas', 'info');
+  });
+
+  // Cargar clientes iniciales
   const clients = await loadClients();
   const sidebarList = document.getElementById('sidebar-client-list');
   const mainContent = document.getElementById('main-content-area');
 
-  refreshSidebarFn = async (filter = '') => {
+  // Refrescar sidebar aplicando filtro
+  refreshSidebarFn = async (filterText = '') => {
     const allClients = await loadClients();
-    const filtered = filter
-      ? allClients.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()) || c.phone.includes(filter))
+    let filtered = filterText
+      ? allClients.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()) || c.phone.includes(filterText))
       : allClients;
+
+    // Aplicar filtro "Servicios" (clientes con al menos un servicio)
+    if (currentSidebarFilter === 'withServices') {
+      filtered = filtered.filter(c => c.services && c.services.length > 0);
+    }
+
     renderSidebarClients(sidebarList, filtered);
   };
 
   renderSidebarClients(sidebarList, clients);
 
+  // Eventos en la lista de clientes
   sidebarList.addEventListener('click', async (e) => {
     const item = e.target.closest('.sidebar-client-item');
     if (!item) return;
@@ -100,46 +164,59 @@ export async function initProfessionalView(main) {
     await loadClientHistory(clientId, mainContent);
   });
 
+  // Nuevo cliente
   document.getElementById('btn-new-client').addEventListener('click', () => openNewClientModal());
 
+  // Búsqueda
   const searchInput = document.getElementById('dashboard-search');
   searchInput.addEventListener('input', debounce(async (e) => {
     await refreshSidebarFn(e.target.value);
   }, 300));
 
+  // FAB
+  document.getElementById('fab-add-service').addEventListener('click', () => {
+    if (selectedClientId) {
+      openNewServiceModal();
+    }
+  });
+
+  // Estado inicial
   mainContent.innerHTML = `
     <div class="empty-dashboard">
-      <i class="fas fa-cut"></i>
+      <span class="material-symbols-outlined">content_cut</span>
       <h3>Selecciona un cliente para ver su historial</h3>
       <p>O crea uno nuevo con el botón "+ Nuevo Cliente"</p>
     </div>
   `;
 }
 
+// ─── Renderizado de la lista de clientes en el sidebar ───
 function renderSidebarClients(container, clients) {
   if (clients.length === 0) {
-    container.innerHTML = `<p style="color:#999; text-align:center;">Sin clientes</p>`;
+    container.innerHTML = `<p class="sidebar-empty">Sin clientes</p>`;
     return;
   }
   const html = clients.map(c => {
     const initials = c.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+    const lastService = c.services?.length
+      ? c.services.reduce((latest, s) => new Date(s.date) > new Date(latest.date) ? s : latest)
+      : null;
+    const timeAgo = lastService ? formatTimeAgo(lastService.date) : 'Sin servicios';
     return `
-      <div class="sidebar-client-item" data-id="${escapeHtml(c.id)}">
-        <div class="client-initials">${initials}</div>
-        <div class="client-name-sidebar">
-          <span>${escapeHtml(c.name)}</span>
-          <small class="client-phone-sidebar">${escapeHtml(c.phone)}</small>
+      <button class="sidebar-client-item" data-id="${escapeHtml(c.id)}">
+        <div class="client-avatar-circle">${initials}</div>
+        <div class="client-item-info">
+          <p class="client-item-name">${escapeHtml(c.name)}</p>
+          <p class="client-item-time">${timeAgo}</p>
         </div>
-      </div>
+      </button>
     `;
   }).join('');
   container.innerHTML = html;
 }
 
+// ─── Carga del historial de un cliente en el área principal ───
 async function loadClientHistory(clientId, container) {
-  // Mostrar skeletons inmediatamente
-  showSkeletonCards(container, 3);
-
   const client = await getClientById(clientId);
   if (!client) {
     container.innerHTML = `<p>Cliente no encontrado.</p>`;
@@ -147,57 +224,86 @@ async function loadClientHistory(clientId, container) {
   }
   const services = await getServicesByClientId(clientId);
   const sorted = [...services].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const initials = client.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
 
-  const servicesHtml = sorted.length === 0 
-    ? `<div class="empty-state"><i class="fas fa-cut fa-3x"></i><p>${t('noServices')}</p></div>`
-    : sorted.map(s => renderServiceCardDashboard(s)).join('');
-
-  const toggleId = `toggle-${clientId}`;
   container.innerHTML = `
-    <div class="history-header">
-      <div class="history-service-count">${services.length} servicio(s) registrado(s)</div>
-      <h2 class="history-title">Historial de Servicio</h2>
-      <p class="history-client-name">Cliente: ${escapeHtml(client.name)}</p>
-      <p class="history-client-phone"><i class="fas fa-phone-alt"></i> ${escapeHtml(client.phone)}</p>
-      <a href="https://wa.me/${client.phone.replace(/\D/g,'')}" class="whatsapp-link" style="display:none;" target="_blank" rel="noopener noreferrer" aria-label="Enviar mensaje por WhatsApp">
-        <i class="fab fa-whatsapp"></i> Contactar
-      </a>
-      <div class="history-divider"></div>
-      <button class="toggle-services-btn" data-target="${toggleId}" aria-expanded="true">
-        <i class="fas fa-chevron-up"></i> <span>Ocultar servicios</span>
-      </button>
-    </div>
-    <div id="${toggleId}" class="services-container">
-      ${servicesHtml}
-      <div class="add-service-card" id="add-service-area">
-        <div class="add-service-card-content">
-          <i class="fas fa-plus-circle fa-2x"></i>
-          <span>Agregar nuevo servicio</span>
+    <!-- Client Header -->
+    <div class="client-detail-header">
+      <div class="client-detail-avatar">${initials}</div>
+      <div class="client-detail-info">
+        <div class="client-detail-name-row">
+          <h2 class="client-detail-name">${escapeHtml(client.name)}</h2>
+          ${client.services.length > 10 ? '<span class="badge-vip">VIP</span>' : ''}
+        </div>
+        <div class="client-detail-meta">
+          <span class="meta-item">
+            <span class="material-symbols-outlined">call</span>
+            ${escapeHtml(client.phone)}
+          </span>
+          <span class="meta-item">
+            <span class="material-symbols-outlined">history</span>
+            ${services.length} servicios realizados
+          </span>
         </div>
       </div>
+      <div class="client-detail-actions">
+        <button class="btn-toggle-services" id="btn-toggle-services">
+          <span class="material-symbols-outlined">visibility_off</span>
+          <span>Ocultar servicios</span>
+        </button>
+        <button class="btn-edit-profile" id="btn-edit-profile">
+          <span class="material-symbols-outlined">edit</span>
+          Editar Perfil
+        </button>
+      </div>
     </div>
+
+    <!-- Services Grid -->
+    <div class="services-grid" id="services-grid">
+      ${sorted.length === 0 ? `
+        <div class="empty-services">
+          <span class="material-symbols-outlined">content_cut</span>
+          <p>No hay servicios registrados</p>
+        </div>
+      ` : sorted.map(s => renderServiceCardDashboard(s)).join('')}
+      
+      <button class="add-service-card-dash" id="add-service-area">
+        <div class="add-service-icon">
+          <span class="material-symbols-outlined">add</span>
+        </div>
+        <div class="add-service-text">
+          <h3>Agregar nuevo servicio</h3>
+          <p>Registra un nuevo procedimiento para este cliente</p>
+        </div>
+      </button>
+    </div>
+
+    <footer class="dashboard-footer">
+      <p>© 2026 StyleRecord Lite - Gestión Profesional de Belleza</p>
+    </footer>
   `;
 
-  // Toggle de servicios
-  const toggleBtn = container.querySelector('.toggle-services-btn');
-  const servicesContainer = document.getElementById(toggleId);
+  // Mostrar FAB
+  document.getElementById('fab-add-service').style.display = 'flex';
+
+  // Toggle servicios
+  const toggleBtn = document.getElementById('btn-toggle-services');
+  const servicesGrid = document.getElementById('services-grid');
+  let servicesVisible = true;
   toggleBtn.addEventListener('click', () => {
-    const isVisible = !servicesContainer.classList.contains('hidden');
-    if (isVisible) {
-      servicesContainer.classList.add('hidden');
-      toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i> <span>Mostrar servicios</span>';
-      toggleBtn.setAttribute('aria-expanded', 'false');
-    } else {
-      servicesContainer.classList.remove('hidden');
-      toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i> <span>Ocultar servicios</span>';
-      toggleBtn.setAttribute('aria-expanded', 'true');
-    }
+    servicesVisible = !servicesVisible;
+    servicesGrid.style.display = servicesVisible ? '' : 'none';
+    toggleBtn.querySelector('span:last-child').textContent = servicesVisible ? 'Ocultar servicios' : 'Mostrar servicios';
+    toggleBtn.querySelector('.material-symbols-outlined').textContent = servicesVisible ? 'visibility_off' : 'visibility';
   });
 
-  // Evento para agregar servicio
+  // Editar perfil
+  document.getElementById('btn-edit-profile').addEventListener('click', () => openEditClientModal(client));
+
+  // Agregar servicio
   document.getElementById('add-service-area').addEventListener('click', () => openNewServiceModal());
 
-  // Eventos para editar/eliminar servicios
+  // Eventos en tarjetas de servicio
   container.querySelectorAll('.btn-edit-service-dash').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -212,6 +318,7 @@ async function loadClientHistory(clientId, container) {
   });
 }
 
+// ─── Renderizado de una tarjeta de servicio ───
 function renderServiceCardDashboard(service) {
   const images = [];
   if (service.beforeImg) images.push(service.beforeImg);
@@ -222,62 +329,79 @@ function renderServiceCardDashboard(service) {
   const afterIdx = images.indexOf(service.afterImg);
   const lateralIdx = images.indexOf(service.afterLateralImg);
 
+  const dateObj = new Date(service.date);
+  const day = dateObj.getDate();
+  const month = dateObj.toLocaleString('es-ES', { month: 'short' });
+  const year = dateObj.getFullYear();
+
   return `
     <div class="service-card-dashboard" data-service-id="${escapeHtml(service.id)}">
       <div class="service-card-header">
-        <span class="service-date">${formatDateSpanish(service.date)}</span>
-        <span class="service-type-badge">${escapeHtml(service.type)}</span>
-      </div>
-      <div class="service-images-grid" data-images='${imagesJson}'>
-        <div class="image-card image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}">
-          <div class="image-label">ANTES</div>
-          ${service.beforeImg 
-            ? `<img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" />`
-            : '<div class="image-placeholder">Sin foto</div>'}
+        <div class="service-date-badge">
+          <span class="service-day">${day}</span>
+          <span class="service-month-year">${month} ${year}</span>
         </div>
-        <div class="image-card image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}">
-          <div class="image-label">DESPUÉS FRONTAL</div>
-          ${service.afterImg 
-            ? `<img src="${escapeHtml(service.afterImg)}" alt="Después frontal" loading="lazy" />`
-            : '<div class="image-placeholder">Sin foto</div>'}
+        <div class="service-info">
+          <span class="service-type-pill">${escapeHtml(service.type)}</span>
+          <p class="service-stylist">Realizado por: Staff</p>
         </div>
-        <div class="image-card image-item" data-index="${lateralIdx >= 0 ? lateralIdx : 0}">
-          <div class="image-label">DESPUÉS LATERAL</div>
-          ${service.afterLateralImg 
-            ? `<img src="${escapeHtml(service.afterLateralImg)}" alt="Después lateral" loading="lazy" />`
-            : '<div class="image-placeholder">Sin foto</div>'}
+        <div class="service-card-actions">
+          <button class="btn-icon-service btn-edit-service-dash" data-id="${escapeHtml(service.id)}" title="Editar">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button class="btn-icon-service btn-delete-service-dash" data-id="${escapeHtml(service.id)}" title="Eliminar">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
         </div>
       </div>
-      ${service.notes ? `
-      <div class="service-notes-dashboard">
-        <div class="notes-bar"></div>
-        <div class="notes-text">${escapeHtml(service.notes)}</div>
-      </div>` : ''}
-      <div class="service-actions-dashboard">
-        <button class="btn-edit-service-dash" data-id="${escapeHtml(service.id)}">
-          <i class="fas fa-edit"></i> Editar
-        </button>
-        <button class="btn-delete-service-dash" data-id="${escapeHtml(service.id)}">
-          <i class="fas fa-trash"></i> Eliminar
-        </button>
+      <div class="service-card-body">
+        <div class="service-images-grid" data-images='${imagesJson}'>
+          <div class="image-card image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}">
+            ${service.beforeImg 
+              ? `<img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" />`
+              : '<div class="image-placeholder"><span class="material-symbols-outlined">photo</span></div>'}
+            <span class="image-label">ANTES</span>
+          </div>
+          <div class="image-card image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}">
+            ${service.afterImg 
+              ? `<img src="${escapeHtml(service.afterImg)}" alt="Después frontal" loading="lazy" />`
+              : '<div class="image-placeholder"><span class="material-symbols-outlined">photo</span></div>'}
+            <span class="image-label">DESPUÉS FRONTAL</span>
+          </div>
+          <div class="image-card image-item" data-index="${lateralIdx >= 0 ? lateralIdx : 0}">
+            ${service.afterLateralImg 
+              ? `<img src="${escapeHtml(service.afterLateralImg)}" alt="Después lateral" loading="lazy" />`
+              : '<div class="image-placeholder"><span class="material-symbols-outlined">photo</span></div>'}
+            <span class="image-label">DESPUÉS LATERAL</span>
+          </div>
+        </div>
+        ${service.notes ? `
+        <div class="service-notes">
+          <h4 class="service-notes-title">Notas del Servicio</h4>
+          <p>${escapeHtml(service.notes)}</p>
+        </div>` : ''}
       </div>
     </div>
   `;
 }
 
-function formatDateSpanish(dateStr) {
-  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const d = new Date(dateStr);
-  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+// ─── Formateo de tiempo relativo ───
+function formatTimeAgo(dateStr) {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return `Hace ${diffMins} minutos`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `Hace ${diffHours} horas`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 1) return 'Ayer';
+  if (diffDays < 7) return `Hace ${diffDays} días`;
+  return date.toLocaleDateString('es-ES');
 }
 
-// ── CRUD de cliente y servicios ──
-
-/**
- * Abre el modal para crear un nuevo cliente, ahora con selector de país.
- */
+// ─── Modal: Nuevo Cliente ───
 async function openNewClientModal() {
-  // Construir opciones de países
   const countryOptions = countries
     .map(c => `<option value="${c.dialCode}" ${c.code === 'PE' ? 'selected' : ''}>${c.flag} ${c.name} (${c.dialCode})</option>`)
     .join('');
@@ -287,23 +411,19 @@ async function openNewClientModal() {
       <label>Nombre completo:</label>
       <input type="text" id="client-name" placeholder="María García" required />
       <div class="field-error" id="error-client-name"></div>
-
       <label>País:</label>
       <select id="client-country" required style="width:100%; margin-bottom:0.8rem;">
         ${countryOptions}
       </select>
-
       <label>Número de teléfono (sin prefijo):</label>
       <input type="tel" id="client-phone" placeholder="987654321" required />
       <div class="field-error" id="error-client-phone"></div>
-
       <div id="validation-area"></div>
       <button type="submit" id="validate-btn">Validar y Guardar</button>
     </form>
   `;
 
   showModal('Nuevo Cliente', formHtml);
-
   const form = document.getElementById('new-client-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -311,7 +431,6 @@ async function openNewClientModal() {
     const dialCode = document.getElementById('client-country').value;
     const localNumber = document.getElementById('client-phone').value.trim();
     const fullPhone = composeFullNumber(dialCode, localNumber);
-
     const errors = validateClientFormData(name, fullPhone);
     displayFormErrors('client', errors);
     if (Object.keys(errors).length > 0) return;
@@ -328,10 +447,10 @@ async function openNewClientModal() {
     validationArea.innerHTML = '';
 
     try {
-      const result = await validatePhone(fullPhone);  // numverify recibe número completo
+      const result = await validatePhone(fullPhone);
       validationArea.innerHTML = `
         <div class="validation-result">
-          <i class="fas fa-check-circle"></i> Número válido<br>
+          <span class="material-symbols-outlined" style="color:green;">check_circle</span> Número válido<br>
           <strong>${escapeHtml(result.number)}</strong><br>
           País: ${escapeHtml(result.country_name)} (${escapeHtml(result.country_code)})<br>
           Compañía: ${escapeHtml(result.carrier)}
@@ -341,11 +460,7 @@ async function openNewClientModal() {
         name,
         phone: fullPhone,
         phoneValid: true,
-        phoneDetails: {
-          country: result.country_name,
-          carrier: result.carrier,
-          line_type: result.line_type,
-        },
+        phoneDetails: { country: result.country_name, carrier: result.carrier, line_type: result.line_type },
         services: [],
       };
       await addClient(newClient);
@@ -381,6 +496,29 @@ async function openNewClientModal() {
   });
 }
 
+// ─── Modal: Editar Cliente ───
+async function openEditClientModal(client) {
+  const formHtml = buildEditClientForm(client);
+  showModal('Editar Cliente', formHtml);
+  document.getElementById('edit-client-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('edit-client-name').value.trim();
+    const phone = document.getElementById('edit-client-phone').value.trim();
+    const errors = validateClientFormData(name, phone);
+    displayFormErrors('edit-client', errors);
+    if (Object.keys(errors).length > 0) return;
+    await updateClient(client.id, { name, phone });
+    hideModal();
+    await refreshSidebarFn();
+    const mainContent = document.getElementById('main-content-area');
+    if (selectedClientId === client.id) {
+      await loadClientHistory(client.id, mainContent);
+    }
+    showSuccess('Cliente actualizado');
+  });
+}
+
+// ─── Modal: Nuevo Servicio ───
 async function openNewServiceModal() {
   if (!selectedClientId) {
     showError('Selecciona un cliente primero.');
@@ -428,6 +566,7 @@ async function openNewServiceModal() {
   });
 }
 
+// ─── Editar Servicio ───
 async function handleEditService(serviceId) {
   const services = await getServicesByClientId(selectedClientId);
   const service = services.find(s => s.id === serviceId);
@@ -449,6 +588,7 @@ async function handleEditService(serviceId) {
   });
 }
 
+// ─── Eliminar Servicio ───
 async function handleDeleteService(serviceId) {
   const confirmed = await showConfirmModal('¿Eliminar este servicio?');
   if (!confirmed) return;
@@ -458,6 +598,7 @@ async function handleDeleteService(serviceId) {
   showSuccess('Servicio eliminado');
 }
 
+// ─── Mostrar errores en formularios ───
 function displayFormErrors(prefix, errors) {
   const fields = ['name', 'phone', 'type', 'date'];
   fields.forEach(f => {

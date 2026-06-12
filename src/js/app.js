@@ -59,6 +59,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const main = document.querySelector("main");
     main.innerHTML = '';
     await initSharedView(main, token);
+
+    // Permitir navegación desde la vista compartida hacia el SPA
+    window.addEventListener('hashchange', () => {
+      window.location.href = window.location.origin + window.location.pathname + window.location.hash;
+    });
+
     return;
   }
 
