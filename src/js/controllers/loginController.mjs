@@ -27,7 +27,14 @@ export function initLoginView(container) {
 function renderProfessionalLogin(container) {
   container.innerHTML = `
     <section class="login-view active">
-      <div class="login-card">
+      <!-- Fondos decorativos (solo visibles en móvil) -->
+      <div class="login-decorations" aria-hidden="true">
+        <div class="login-deco-circle login-deco-circle--primary"></div>
+        <div class="login-deco-circle login-deco-circle--secondary"></div>
+        <div class="login-deco-pattern"></div>
+      </div>
+
+      <div class="login-card" id="professional-login-card">
         <div class="login-icon-circle">
           <span class="material-symbols-outlined" style="font-size:32px;">content_cut</span>
         </div>
@@ -58,6 +65,18 @@ function renderProfessionalLogin(container) {
     </section>
   `;
 
+  // Efecto de movimiento sutil de la tarjeta con el mouse (solo estético)
+  const card = document.getElementById('professional-login-card');
+  if (card && window.matchMedia('(hover: hover)').matches) {
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 10;   // ±5px
+      const y = (clientY / window.innerHeight - 0.5) * 10;
+      card.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  }
+
+  // Evento submit (funcionalidad existente)
   const form = document.getElementById('login-form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();

@@ -3,32 +3,59 @@ import { t } from "../i18n.mjs";
 export function initRoleView(container) {
   container.innerHTML = `
     <section class="role-selection">
-      <h1 class="role-heading">Accede a StyleRecord</h1>
-      <p class="role-subtitle">Elige cómo quieres acceder</p>
+      <!-- Header con animación -->
+      <div class="role-header">
+        <div class="role-brand">
+          <span class="material-symbols-outlined">spa</span>
+          <h1>StyleRecord</h1>
+        </div>
+        <h2 class="role-heading">${t('login')}</h2>
+        <p class="role-subtitle">Elige cómo quieres acceder</p>
+      </div>
+
+      <!-- Tarjetas de rol -->
       <div class="role-cards">
         <!-- Profesional -->
-        <div class="role-card" id="role-professional" tabindex="0" role="button" aria-label="Soy Profesional">
+        <button class="role-card" id="role-professional" aria-label="${t('professional')}">
           <div class="role-icon professional">
             <span class="material-symbols-outlined" style="font-size:36px;">content_cut</span>
           </div>
-          <h2 class="role-card-title professional">${t('professional')}</h2>
-          <p class="role-card-desc">Gestiona tus clientes, guarda historiales visuales y optimiza tu agenda.</p>
-        </div>
+          <div class="role-info">
+            <h2 class="role-card-title professional">${t('professional')}</h2>
+            <p class="role-card-desc">Gestiona tus clientes, guarda historiales visuales y optimiza tu agenda.</p>
+          </div>
+          <span class="material-symbols-outlined role-chevron">chevron_right</span>
+        </button>
+
         <!-- Cliente -->
-        <div class="role-card" id="role-client" tabindex="0" role="button" aria-label="Soy Cliente">
+        <button class="role-card" id="role-client" aria-label="${t('client')}">
           <div class="role-icon client">
             <span class="material-symbols-outlined" style="font-size:36px;">group</span>
           </div>
-          <h2 class="role-card-title client">${t('client')}</h2>
-          <p class="role-card-desc">Consulta el historial de tus servicios, reserva citas y comparte tu perfil.</p>
-        </div>
+          <div class="role-info">
+            <h2 class="role-card-title client">${t('client')}</h2>
+            <p class="role-card-desc">Consulta el historial de tus servicios, reserva citas y comparte tu perfil.</p>
+          </div>
+          <span class="material-symbols-outlined role-chevron">chevron_right</span>
+        </button>
       </div>
-      <div class="role-register-link">
-        ¿No tienes cuenta? <a href="#/register">Regístrate ahora</a>
-      </div>
+
+      <!-- Enlace de registro -->
+      <a class="role-register-link" href="#/register">
+        ¿No tienes cuenta? Regístrate ahora
+      </a>
+
+      <!-- Badge de seguridad -->
       <div class="role-security-badge">
-        <span class="material-symbols-outlined" style="font-size:18px;">lock</span>
+        <span class="material-symbols-outlined">lock</span>
         <span>Acceso seguro con cifrado SSL</span>
+      </div>
+
+      <!-- Imagen decorativa (solo móvil) -->
+      <div class="role-decorative-image">
+        <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+             alt="Ambiente de salón de belleza" 
+             loading="lazy" />
       </div>
     </section>
   `;
@@ -41,7 +68,7 @@ export function initRoleView(container) {
     window.location.hash = '/login?role=client';
   });
 
-  // También permitir Enter/Space en las tarjetas para accesibilidad
+  // Accesibilidad: permitir Enter/Space en las tarjetas
   document.querySelectorAll('.role-card').forEach(card => {
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {

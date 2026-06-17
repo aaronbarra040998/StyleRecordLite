@@ -8,14 +8,14 @@ import { initLoginView } from "./controllers/loginController.mjs";
 import { initProfessionalView } from "./controllers/professionalController.mjs";
 import { initClientView } from "./controllers/clientController.mjs";
 import { initSharedView } from "./controllers/sharedController.mjs";
-import { initRegisterView } from "./controllers/registerController.mjs"; // Fase 7
+import { initRegisterView } from "./controllers/registerController.mjs";
 import { hideModal, initLightboxDelegation } from "./ui.mjs";
 import { t } from "./i18n.mjs";
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadHeaderFooter();
   cleanExpiredTokens();
-  initLightboxDelegation(); // Fase 5: lightbox global
+  initLightboxDelegation();
 
   // ========================================================
   // Offline banner
@@ -50,6 +50,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ========================================================
+  // Efecto de sombra en el header al hacer scroll
+  // ========================================================
+  const header = document.getElementById("main-header");
+  if (header) {
+    window.addEventListener("scroll", () => {
+      header.classList.toggle("scrolled", window.scrollY > 10);
+    });
+  }
+
+  // ========================================================
   // Detección de enlace compartido
   // ========================================================
   const urlParams = new URLSearchParams(window.location.search);
@@ -60,7 +70,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     main.innerHTML = '';
     await initSharedView(main, token);
 
-    // Permitir navegación desde la vista compartida hacia el SPA
     window.addEventListener('hashchange', () => {
       window.location.href = window.location.origin + window.location.pathname + window.location.hash;
     });
@@ -88,14 +97,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     initRoleView(main);
   });
 
-  // Público: Login (con parámetro ?role=...)
+  // Público: Login
   router.addRoute('/login', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initLoginView(main);
   });
 
-  // Público: Registro profesional (Fase 7)
+  // Público: Registro profesional
   router.addRoute('/register', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
