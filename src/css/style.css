@@ -1159,8 +1159,8 @@ main {
     font-size: var(--font-size-sm);
   }
 }
-/* ═══════════════════════════════════════════════════════════
-   DASHBOARD PROFESIONAL (CORREGIDO)
+ /* ═══════════════════════════════════════════════════════════
+   DASHBOARD PROFESIONAL (CORREGIDO + MEJORAS MÓVIL)
    ═══════════════════════════════════════════════════════════ */
 
 body.dashboard-mode #main-header,
@@ -1168,11 +1168,11 @@ body.dashboard-mode #main-footer {
   display: none !important;
 }
 
-/* ✅ Quitar el padding superior heredado del main público */
 body.dashboard-mode main {
   padding-top: 0 !important;
 }
 
+/* ─── Sidebar (escritorio) ─── */
 .dashboard-sidebar {
   position: fixed;
   left: 0;
@@ -1388,7 +1388,7 @@ body.dashboard-mode main {
   color: var(--color-error);
 }
 
-/* Dashboard Main */
+/* ─── Dashboard Main ─── */
 .dashboard-main {
   margin-left: 300px;
   height: 100vh;
@@ -1487,7 +1487,7 @@ body.dashboard-mode main {
   color: var(--color-primary);
 }
 
-/* Main Content Area */
+/* ─── Main Content Area ─── */
 .main-content-area {
   flex: 1;
   overflow-y: auto;
@@ -1520,7 +1520,7 @@ body.dashboard-mode main {
   font-size: var(--font-size-md);
 }
 
-/* Client Detail Header */
+/* ─── Client Detail Header ─── */
 .client-detail-header {
   display: flex;
   align-items: flex-start;
@@ -1637,7 +1637,7 @@ body.dashboard-mode main {
   box-shadow: var(--shadow-md);
 }
 
-/* Services Grid */
+/* ─── Services Grid ─── */
 .services-grid {
   display: flex;
   flex-direction: column;
@@ -1656,7 +1656,7 @@ body.dashboard-mode main {
   opacity: 0.3;
 }
 
-/* Service Card (Dashboard) */
+/* ─── Service Card (Dashboard) ─── */
 .service-card-dashboard {
   background: var(--color-surface-container-lowest);
   border-radius: var(--radius-2xl);
@@ -1831,7 +1831,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface);
 }
 
-/* Add Service Card */
+/* ─── Add Service Card ─── */
 .add-service-card-dash {
   width: 100%;
   border: 2px dashed var(--color-outline-variant);
@@ -1888,7 +1888,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface-variant);
 }
 
-/* Dashboard Footer */
+/* ─── Dashboard Footer ─── */
 .dashboard-footer {
   margin-top: var(--space-xl);
   padding-top: var(--space-md);
@@ -1902,7 +1902,7 @@ body.dashboard-mode main {
   opacity: 0.6;
 }
 
-/* FAB */
+/* ─── FAB ─── */
 .fab {
   position: fixed;
   bottom: var(--space-margin-desktop);
@@ -1913,12 +1913,12 @@ body.dashboard-mode main {
   background: var(--color-primary);
   color: var(--color-on-primary);
   border: none;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 50;
+  z-index: 60;               /* Aumentado para superar la bottom nav (50) */
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -1935,6 +1935,298 @@ body.dashboard-mode main {
   font-size: 32px;
 }
 
+/* ============================================================
+   MEJORAS MÓVIL (≤1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+
+  /* Overlay del drawer */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Sidebar convertido en drawer */
+  .dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Dashboard Main ocupa todo el ancho */
+  .dashboard-main {
+    margin-left: 0;
+    height: 100vh;
+    padding-bottom: 72px; /* espacio para la barra inferior */
+  }
+
+  /* Header del dashboard: añadimos botón hamburguesa */
+  .dashboard-header {
+    padding: 0 var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .btn-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-on-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .btn-hamburger:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-hamburger .material-symbols-outlined {
+    font-size: 24px;
+  }
+
+  .dashboard-search {
+    max-width: none;
+    flex: 1;
+  }
+
+  .dashboard-header-actions .header-avatar {
+    display: none; /* Ocultamos avatar en móvil para ganar espacio */
+  }
+
+  /* Ocultamos la sección de notificaciones/configuración temporalmente si es necesario */
+  .dashboard-header-actions .header-icon-btn {
+    display: flex; /* Las mantenemos */
+  }
+
+  /* Main content area padding ajustado */
+  .main-content-area {
+    padding: var(--space-md) var(--space-margin-mobile);
+    padding-bottom: 80px; /* Espacio extra para la barra inferior */
+  }
+
+  /* Empty Dashboard (mejorado) */
+  .empty-dashboard {
+    height: auto;
+    min-height: auto;          /* eliminamos el 60vh que desperdiciaba espacio */
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .empty-dashboard .material-symbols-outlined {
+    font-size: 5rem;
+    color: var(--color-primary);
+    opacity: 0.2;
+    animation: softPulseIcon 3s infinite;
+  }
+
+  @keyframes softPulseIcon {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(1.05); }
+  }
+
+  .empty-dashboard h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-on-surface);
+    margin-top: var(--space-sm);
+  }
+
+  .empty-dashboard p {
+    font-size: var(--font-size-md);
+    color: var(--color-on-surface-variant);
+    max-width: 280px;
+  }
+
+  /* Clientes Recientes (estilo tarjetas) */
+  .recent-clients-section {
+    margin-top: var(--space-lg);
+  }
+
+  .recent-clients-title {
+    font-family: var(--font-headline);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-on-surface-variant);
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .recent-clients-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .recent-client-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    background: var(--color-surface-container-lowest);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-outline-variant);
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    text-align: left; /* ← Solución: anula el text-align:center por defecto de los botones */
+  }
+
+  .recent-client-card:active {
+    transform: scale(0.98);
+  }
+
+  .recent-client-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .recent-client-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+  }
+
+  .recent-client-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-on-surface);
+  }
+
+  .recent-client-meta {
+    font-size: var(--font-size-sm);
+    color: var(--color-on-surface-variant);
+  }
+
+  .recent-client-chevron {
+    color: var(--color-outline);
+    transition: transform 0.2s;
+  }
+
+  .recent-client-card:hover .recent-client-chevron {
+    transform: translateX(4px);
+  }
+
+  /* FAB ajustado para no chocar con la barra inferior */
+ .fab {
+    bottom: 88px;            /* 72px (bottom nav) + 16px */
+    right: var(--space-margin-mobile);
+    z-index: 60;             /* mismo que antes, aseguramos */
+  }
+
+  /* ─── Bottom Navigation Bar ─── */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+    background: rgba(252, 249, 248, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--color-outline-variant);
+    z-index: 50;
+    padding: 0 var(--space-sm);
+  }
+
+  .bottom-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: var(--color-on-surface-variant);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-md);
+    transition: color 0.2s, background 0.2s;
+    min-width: 64px;
+  }
+
+  .bottom-nav-btn .material-symbols-outlined {
+    font-size: 24px;
+    transition: font-variation-settings 0.2s;
+  }
+
+  .bottom-nav-btn.active {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .bottom-nav-btn.active .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* Ajuste responsive para las tarjetas de servicio */
+  .service-images-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .client-detail-header {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .client-detail-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-images-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ocultar la bottom-nav en escritorio */
+@media (min-width: 1025px) {
+  .bottom-nav,
+  .btn-hamburger,
+  .drawer-overlay,
+  .recent-clients-section {
+    display: none !important;
+  }
+}
 /* ─── Toast ─── */
 .toast {
   position: fixed;

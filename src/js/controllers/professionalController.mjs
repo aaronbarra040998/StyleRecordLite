@@ -19,6 +19,9 @@ export async function initProfessionalView(main) {
   document.body.classList.add('dashboard-mode');
 
   main.innerHTML = `
+    <!-- Overlay del drawer (móvil) -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
     <!-- Sidebar -->
     <aside class="dashboard-sidebar" id="dashboard-sidebar">
       <div class="sidebar-brand">
@@ -63,6 +66,9 @@ export async function initProfessionalView(main) {
     <div class="dashboard-main">
       <!-- Header -->
       <header class="dashboard-header">
+        <button class="btn-hamburger" id="btn-hamburger" aria-label="Menú">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="dashboard-search">
           <span class="material-symbols-outlined">search</span>
           <input type="text" id="dashboard-search" placeholder="Buscar cliente..." />
@@ -84,11 +90,49 @@ export async function initProfessionalView(main) {
       <div id="main-content-area" class="main-content-area"></div>
     </div>
 
-    <!-- FAB -->
-    <button class="fab" id="fab-add-service" title="Agregar servicio" style="display:none;">
+    <!-- FAB (siempre visible en móvil, acción contextual) -->
+    <button class="fab" id="fab-add-service" title="Nuevo cliente o servicio">
       <span class="material-symbols-outlined">add</span>
     </button>
+
+    <!-- Bottom Navigation (solo móvil) -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="bottom-nav-btn active" data-nav="dashboard">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span>Inicio</span>
+      </button>
+      <button class="bottom-nav-btn" data-nav="clients">
+        <span class="material-symbols-outlined">group</span>
+        <span>Clientes</span>
+      </button>
+      <button class="bottom-nav-btn" data-nav="services">
+        <span class="material-symbols-outlined">content_cut</span>
+        <span>Servicios</span>
+      </button>
+      <button class="bottom-nav-btn" data-nav="config">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Config</span>
+      </button>
+    </nav>
   `;
+
+  // Drawer lógica
+  const drawer = document.getElementById('dashboard-sidebar');
+  const overlay = document.getElementById('drawer-overlay');
+  const hamburger = document.getElementById('btn-hamburger');
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  hamburger.addEventListener('click', openDrawer);
+  overlay.addEventListener('click', closeDrawer);
 
   // Logout
   document.getElementById('btn-logout-dash').addEventListener('click', () => {
@@ -98,7 +142,7 @@ export async function initProfessionalView(main) {
     window.location.reload();
   });
 
-  // --- Navegación lateral (Clientes / Servicios) ---
+  // Navegación lateral (Clientes / Servicios)
   const navClientes = document.getElementById('nav-clientes');
   const navServicios = document.getElementById('nav-servicios');
 
@@ -112,6 +156,7 @@ export async function initProfessionalView(main) {
     currentSidebarFilter = 'all';
     setActiveNav('all');
     refreshSidebarFn(document.getElementById('dashboard-search').value);
+    // No cerramos el drawer: el usuario puede seguir navegando
   });
 
   navServicios.addEventListener('click', (e) => {
@@ -119,14 +164,15 @@ export async function initProfessionalView(main) {
     currentSidebarFilter = 'withServices';
     setActiveNav('withServices');
     refreshSidebarFn(document.getElementById('dashboard-search').value);
+    // No cerramos el drawer: el usuario puede seguir navegando
   });
 
-  // --- Icono de Configuración ---
+  // Icono de Configuración
   document.getElementById('btn-settings').addEventListener('click', () => {
     showToast('Configuración próximamente', 'info');
   });
 
-  // --- Notificaciones (placeholder) ---
+  // Notificaciones (placeholder)
   document.getElementById('btn-notifications').addEventListener('click', () => {
     showToast('No hay notificaciones nuevas', 'info');
   });
@@ -143,7 +189,6 @@ export async function initProfessionalView(main) {
       ? allClients.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()) || c.phone.includes(filterText))
       : allClients;
 
-    // Aplicar filtro "Servicios" (clientes con al menos un servicio)
     if (currentSidebarFilter === 'withServices') {
       filtered = filtered.filter(c => c.services && c.services.length > 0);
     }
@@ -153,7 +198,7 @@ export async function initProfessionalView(main) {
 
   renderSidebarClients(sidebarList, clients);
 
-  // Eventos en la lista de clientes
+  // Eventos en la lista de clientes (sidebar)
   sidebarList.addEventListener('click', async (e) => {
     const item = e.target.closest('.sidebar-client-item');
     if (!item) return;
@@ -162,10 +207,15 @@ export async function initProfessionalView(main) {
     document.querySelectorAll('.sidebar-client-item').forEach(el => el.classList.remove('selected'));
     item.classList.add('selected');
     await loadClientHistory(clientId, mainContent);
+    // Al seleccionar un cliente, sí cerramos el drawer para mostrar el historial
+    closeDrawer();
   });
 
-  // Nuevo cliente
-  document.getElementById('btn-new-client').addEventListener('click', () => openNewClientModal());
+  // Nuevo cliente (botón sidebar)
+  document.getElementById('btn-new-client').addEventListener('click', () => {
+    closeDrawer();
+    openNewClientModal();
+  });
 
   // Búsqueda
   const searchInput = document.getElementById('dashboard-search');
@@ -173,21 +223,95 @@ export async function initProfessionalView(main) {
     await refreshSidebarFn(e.target.value);
   }, 300));
 
-  // FAB
+  // ─── FAB contextual ───
   document.getElementById('fab-add-service').addEventListener('click', () => {
     if (selectedClientId) {
       openNewServiceModal();
+    } else {
+      openNewClientModal();
     }
   });
 
+  // ─── Bottom Navigation Events ───
+  document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const nav = btn.dataset.nav;
+      if (nav === 'dashboard') {
+        // Volver a la vista inicial
+        setSelectedClientId(null);
+        showInitialDashboardView(mainContent, clients);
+      } else if (nav === 'clients') {
+        // Ahora sí: activamos el filtro "all", resaltamos el ítem y refrescamos
+        currentSidebarFilter = 'all';
+        setActiveNav('all');
+        refreshSidebarFn(searchInput.value);
+        openDrawer();
+      } else if (nav === 'services') {
+        currentSidebarFilter = 'withServices';
+        setActiveNav('withServices');
+        refreshSidebarFn(searchInput.value);
+        openDrawer();
+      } else if (nav === 'config') {
+        showToast('Configuración próximamente', 'info');
+      }
+    });
+  });
+
   // Estado inicial
-  mainContent.innerHTML = `
+  showInitialDashboardView(mainContent, clients);
+}
+
+// ─── Vista inicial del dashboard (empty state + clientes recientes) ───
+function showInitialDashboardView(container, clients) {
+  const recentClientsHtml = clients.length > 0
+    ? `
+      <section class="recent-clients-section">
+        <h3 class="recent-clients-title">Clientes Recientes</h3>
+        <div class="recent-clients-list">
+          ${clients.slice(0, 5).map(c => {
+            const initials = c.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+            const lastService = c.services?.length
+              ? c.services.reduce((latest, s) => new Date(s.date) > new Date(latest.date) ? s : latest)
+              : null;
+            const meta = lastService
+              ? `${formatTimeAgo(lastService.date)} · ${escapeHtml(lastService.type)}`
+              : 'Sin servicios';
+            return `
+              <button class="recent-client-card" data-client-id="${escapeHtml(c.id)}">
+                <div class="recent-client-info">
+                  <div class="recent-client-avatar">${initials}</div>
+                  <div>
+                    <div class="recent-client-name">${escapeHtml(c.name)}</div>
+                    <div class="recent-client-meta">${meta}</div>
+                  </div>
+                </div>
+                <span class="material-symbols-outlined recent-client-chevron">chevron_right</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </section>`
+    : '';
+
+  container.innerHTML = `
     <div class="empty-dashboard">
       <span class="material-symbols-outlined">content_cut</span>
-      <h3>Selecciona un cliente para ver su historial</h3>
-      <p>O crea uno nuevo con el botón "+ Nuevo Cliente"</p>
+      <h3>Comienza tu jornada</h3>
+      <p>Selecciona un cliente para ver su historial y gestionar sus servicios hoy.</p>
     </div>
+    ${recentClientsHtml}
   `;
+
+  // Eventos en las tarjetas de clientes recientes
+  container.querySelectorAll('.recent-client-card').forEach(card => {
+    card.addEventListener('click', async () => {
+      const clientId = card.dataset.clientId;
+      setSelectedClientId(clientId);
+      await loadClientHistory(clientId, container);
+    });
+  });
 }
 
 // ─── Renderizado de la lista de clientes en el sidebar ───
@@ -283,9 +407,6 @@ async function loadClientHistory(clientId, container) {
     </footer>
   `;
 
-  // Mostrar FAB
-  document.getElementById('fab-add-service').style.display = 'flex';
-
   // Toggle servicios
   const toggleBtn = document.getElementById('btn-toggle-services');
   const servicesGrid = document.getElementById('services-grid');
@@ -300,7 +421,7 @@ async function loadClientHistory(clientId, container) {
   // Editar perfil
   document.getElementById('btn-edit-profile').addEventListener('click', () => openEditClientModal(client));
 
-  // Agregar servicio
+  // Agregar servicio desde el botón en la lista
   document.getElementById('add-service-area').addEventListener('click', () => openNewServiceModal());
 
   // Eventos en tarjetas de servicio
