@@ -4231,3 +4231,152 @@ body.dashboard-mode main {
     white-space: nowrap;  /* Evitar que el texto del botón se parta */
   }
 }
+/* ============================================================
+   BOTÓN VOLVER AL INICIO (Dashboard Header)
+   ============================================================ */
+.btn-back-dashboard {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.btn-back-dashboard:hover {
+  background: var(--color-outline-variant);
+}
+
+/* Ajuste en el header del cliente para que el botón quede alineado */
+.client-detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+/* En escritorio mostramos el botón home al lado del menú hamburguesa (que se oculta) */
+.btn-home-desktop {
+  display: none; /* Oculto por defecto (móvil usa hamburguesa) */
+}
+
+@media (min-width: 1025px) {
+  .btn-hamburger {
+    display: none !important;
+  }
+
+  .btn-home-desktop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-on-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    margin-right: var(--space-sm);
+  }
+
+  .btn-home-desktop:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* ============================================================
+   DROPDOWN DE BÚSQUEDA (AUTOCOMPLETE)
+   ============================================================ */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 120; /* Por encima de la sidebar (100) */
+  margin: 0;
+  padding: var(--space-xs) 0;
+}
+
+.search-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.search-dropdown-item:hover {
+  background: var(--color-surface-container-highest);
+}
+
+.search-dropdown-item .client-avatar-circle {
+  width: 36px;
+  height: 36px;
+  font-size: var(--font-size-sm);
+}
+
+.search-dropdown-item .client-item-name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-md);
+  color: var(--color-on-surface);
+}
+
+.search-dropdown-item .client-item-time {
+  font-size: var(--font-size-sm);
+  color: var(--color-on-surface-variant);
+}
+/* ============================================================
+   BOTÓN FLOTANTE "VOLVER AL INICIO" (MÓVIL)
+   ============================================================ */
+.fab-home-mobile {
+  position: fixed;
+  bottom: 160px;            /* Encima del FAB principal (88px) */
+  right: var(--space-margin-mobile);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-container-highest);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 61;              /* Por encima del FAB (60) */
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.fab-home-mobile:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.fab-home-mobile:active {
+  transform: scale(0.95);
+}
+
+/* Ocultar en escritorio */
+@media (min-width: 1025px) {
+  .fab-home-mobile {
+    display: none;
+  }
+}

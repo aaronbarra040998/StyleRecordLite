@@ -14,6 +14,7 @@ import countries, { composeFullNumber } from '../countries.mjs';
 
 let refreshSidebarFn;
 let currentSidebarFilter = 'all'; // 'all' o 'withServices'
+let resetMainViewFn; // 🔹 Callback para volver al inicio (compartido)
 
 export async function initProfessionalView(main) {
   document.body.classList.add('dashboard-mode');
@@ -69,9 +70,15 @@ export async function initProfessionalView(main) {
         <button class="btn-hamburger" id="btn-hamburger" aria-label="Menú">
           <span class="material-symbols-outlined">menu</span>
         </button>
+        <!-- 🔹 Escritorio: botón de inicio -->
+        <button class="btn-home-desktop" id="btn-home-desktop" title="Volver al inicio" aria-label="Inicio">
+          <span class="material-symbols-outlined">dashboard</span>
+        </button>
         <div class="dashboard-search">
           <span class="material-symbols-outlined">search</span>
-          <input type="text" id="dashboard-search" placeholder="Buscar cliente..." />
+          <input type="text" id="dashboard-search" placeholder="Buscar cliente..." autocomplete="off" />
+          <!-- 🔹 Dropdown de sugerencias -->
+          <ul id="search-dropdown" class="search-dropdown hidden"></ul>
         </div>
         <div class="dashboard-header-actions">
           <button class="header-icon-btn" id="btn-notifications" aria-label="Notificaciones">
@@ -89,6 +96,11 @@ export async function initProfessionalView(main) {
       <!-- Content Area -->
       <div id="main-content-area" class="main-content-area"></div>
     </div>
+
+    <!-- 🔹 NUEVO (móvil): Botón flotante para volver al inicio -->
+    <button class="fab-home-mobile" id="fab-home-mobile" title="Volver al inicio" aria-label="Inicio">
+      <span class="material-symbols-outlined">home</span>
+    </button>
 
     <!-- FAB (siempre visible en móvil, acción contextual) -->
     <button class="fab" id="fab-add-service" title="Nuevo cliente o servicio">
@@ -156,7 +168,6 @@ export async function initProfessionalView(main) {
     currentSidebarFilter = 'all';
     setActiveNav('all');
     refreshSidebarFn(document.getElementById('dashboard-search').value);
-    // No cerramos el drawer: el usuario puede seguir navegando
   });
 
   navServicios.addEventListener('click', (e) => {
@@ -164,7 +175,6 @@ export async function initProfessionalView(main) {
     currentSidebarFilter = 'withServices';
     setActiveNav('withServices');
     refreshSidebarFn(document.getElementById('dashboard-search').value);
-    // No cerramos el drawer: el usuario puede seguir navegando
   });
 
   // Icono de Configuración
@@ -181,6 +191,16 @@ export async function initProfessionalView(main) {
   const clients = await loadClients();
   const sidebarList = document.getElementById('sidebar-client-list');
   const mainContent = document.getElementById('main-content-area');
+  const searchInput = document.getElementById('dashboard-search');
+  const searchDropdown = document.getElementById('search-dropdown');
+
+  // 🔹 Función para resetear el área principal
+  resetMainViewFn = async () => {
+    setSelectedClientId(null);
+    document.querySelectorAll('.sidebar-client-item').forEach(el => el.classList.remove('selected'));
+    const allClients = await loadClients();
+    await showInitialDashboardView(mainContent, allClients);
+  };
 
   // Refrescar sidebar aplicando filtro
   refreshSidebarFn = async (filterText = '') => {
@@ -194,6 +214,8 @@ export async function initProfessionalView(main) {
     }
 
     renderSidebarClients(sidebarList, filtered);
+    // 🔹 Actualizar dropdown de sugerencias
+    updateSearchDropdown(filtered, filterText);
   };
 
   renderSidebarClients(sidebarList, clients);
@@ -207,7 +229,24 @@ export async function initProfessionalView(main) {
     document.querySelectorAll('.sidebar-client-item').forEach(el => el.classList.remove('selected'));
     item.classList.add('selected');
     await loadClientHistory(clientId, mainContent);
-    // Al seleccionar un cliente, sí cerramos el drawer para mostrar el historial
+    closeDrawer();
+    searchDropdown.classList.add('hidden');
+    searchInput.value = '';
+  });
+
+  // 🔹 Botón de inicio (escritorio)
+  document.getElementById('btn-home-desktop').addEventListener('click', () => {
+    resetMainViewFn();
+    searchInput.value = '';
+    searchDropdown.classList.add('hidden');
+  });
+
+  // 🔹 NUEVO (móvil): Botón flotante de inicio
+  document.getElementById('fab-home-mobile').addEventListener('click', () => {
+    resetMainViewFn();
+    searchInput.value = '';
+    searchDropdown.classList.add('hidden');
+    // Opcional: cerrar drawer si está abierto
     closeDrawer();
   });
 
@@ -217,11 +256,24 @@ export async function initProfessionalView(main) {
     openNewClientModal();
   });
 
-  // Búsqueda
-  const searchInput = document.getElementById('dashboard-search');
+  // Búsqueda con debounce
   searchInput.addEventListener('input', debounce(async (e) => {
-    await refreshSidebarFn(e.target.value);
+    const value = e.target.value;
+    await refreshSidebarFn(value);
   }, 300));
+
+  // 🔹 Cerrar dropdown al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dashboard-search')) {
+      searchDropdown.classList.add('hidden');
+    }
+  });
+
+  searchInput.addEventListener('focus', () => {
+    if (searchInput.value.trim()) {
+      searchDropdown.classList.remove('hidden');
+    }
+  });
 
   // ─── FAB contextual ───
   document.getElementById('fab-add-service').addEventListener('click', () => {
@@ -239,11 +291,8 @@ export async function initProfessionalView(main) {
       btn.classList.add('active');
       const nav = btn.dataset.nav;
       if (nav === 'dashboard') {
-        // Volver a la vista inicial
-        setSelectedClientId(null);
-        showInitialDashboardView(mainContent, clients);
+        resetMainViewFn();
       } else if (nav === 'clients') {
-        // Ahora sí: activamos el filtro "all", resaltamos el ítem y refrescamos
         currentSidebarFilter = 'all';
         setActiveNav('all');
         refreshSidebarFn(searchInput.value);
@@ -261,6 +310,54 @@ export async function initProfessionalView(main) {
 
   // Estado inicial
   showInitialDashboardView(mainContent, clients);
+}
+
+// 🔹 Actualiza el dropdown de sugerencias
+function updateSearchDropdown(filteredClients, query) {
+  const dropdown = document.getElementById('search-dropdown');
+  if (!dropdown) return;
+
+  if (!query || filteredClients.length === 0) {
+    dropdown.classList.add('hidden');
+    return;
+  }
+
+  const html = filteredClients.slice(0, 6).map(c => {
+    const initials = c.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2);
+    const lastService = c.services?.length
+      ? c.services.reduce((latest, s) => new Date(s.date) > new Date(latest.date) ? s : latest)
+      : null;
+    const meta = lastService
+      ? `${formatTimeAgo(lastService.date)} · ${escapeHtml(lastService.type)}`
+      : 'Sin servicios';
+    return `
+      <li class="search-dropdown-item" data-client-id="${escapeHtml(c.id)}">
+        <div class="client-avatar-circle">${initials}</div>
+        <div class="client-item-info">
+          <p class="client-item-name">${escapeHtml(c.name)}</p>
+          <p class="client-item-time">${meta}</p>
+        </div>
+      </li>
+    `;
+  }).join('');
+
+  dropdown.innerHTML = html;
+  dropdown.classList.remove('hidden');
+
+  // Eventos para cada sugerencia
+  dropdown.querySelectorAll('.search-dropdown-item').forEach(item => {
+    item.addEventListener('click', async () => {
+      const clientId = item.dataset.clientId;
+      setSelectedClientId(clientId);
+      const mainContent = document.getElementById('main-content-area');
+      await loadClientHistory(clientId, mainContent);
+      dropdown.classList.add('hidden');
+      document.getElementById('dashboard-search').value = '';
+      // Cerrar drawer en móvil si está abierto
+      document.getElementById('dashboard-sidebar').classList.remove('open');
+      document.getElementById('drawer-overlay').classList.remove('open');
+    });
+  });
 }
 
 // ─── Vista inicial del dashboard (empty state + clientes recientes) ───
@@ -353,6 +450,10 @@ async function loadClientHistory(clientId, container) {
   container.innerHTML = `
     <!-- Client Header -->
     <div class="client-detail-header">
+      <!-- 🔹 Botón para volver al inicio (también en móvil) -->
+      <button class="btn-back-dashboard" id="btn-back-dashboard" title="Volver al inicio">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
       <div class="client-detail-avatar">${initials}</div>
       <div class="client-detail-info">
         <div class="client-detail-name-row">
@@ -406,6 +507,11 @@ async function loadClientHistory(clientId, container) {
       <p>© 2026 StyleRecord Lite - Gestión Profesional de Belleza</p>
     </footer>
   `;
+
+  // 🔹 Evento para el botón "Volver"
+  document.getElementById('btn-back-dashboard').addEventListener('click', () => {
+    if (resetMainViewFn) resetMainViewFn();
+  });
 
   // Toggle servicios
   const toggleBtn = document.getElementById('btn-toggle-services');
