@@ -275,7 +275,7 @@ main {
 
 .hero-right {
   position: relative;
-  display: none;
+  display: block; /* Se muestra en escritorio */
 }
 
 .hero-image-wrapper {
