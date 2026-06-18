@@ -1,8 +1,8 @@
 /* ============================================================
-   SISTEMA DE DISEÑO – StyleRecord Lite (nuevo branding)
+   DESIGN SYSTEM – StyleRecord Lite (new branding)
    ============================================================ */
 :root {
-  /* ─── Paleta principal ─── */
+  /* ─── Main palette ─── */
   --color-primary: #4800b2;
   --color-on-primary: #ffffff;
   --color-primary-container: #6200ee;
@@ -53,7 +53,7 @@
   --color-inverse-on-surface: #f3f0ef;
   --color-inverse-primary: #cfbdff;
 
-  /* ─── Tipografía ─── */
+  /* ─── Typography ─── */
   --font-headline: 'Montserrat', sans-serif;
   --font-body: 'Inter', sans-serif;
 
@@ -74,7 +74,7 @@
   --line-height-tight: 1.2;
   --line-height-normal: 1.6;
 
-  /* ─── Espaciados ─── */
+  /* ─── Spacing ─── */
   --space-xs: 4px;
   --space-sm: 12px;
   --space-md: 24px;
@@ -84,7 +84,7 @@
   --space-margin-desktop: 40px;
   --space-margin-mobile: 16px;
 
-  /* ─── Bordes ─── */
+  /* ─── Borders ─── */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -92,12 +92,12 @@
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 
-  /* ─── Sombras ─── */
+  /* ─── Shadows ─── */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 24px rgba(18,18,18,0.06);
   --shadow-lg: 0 12px 32px rgba(18,18,18,0.12);
 
-  /* ─── Transiciones ─── */
+  /* ─── Transitions ─── */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.7s ease;

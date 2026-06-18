@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener('offline', () => offlineBanner.classList.remove('hidden'));
 
   // ========================================================
-  // Configuración del modal
+  // Modal configuration
   // ========================================================
   const modalClose = document.getElementById("modal-close");
   const modalOverlay = document.getElementById("modal-overlay");
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target === e.currentTarget) hideModal();
   });
 
-  // Botón de logout genérico (header público)
+  // Generic logout button (public header)
   const btnLogout = document.getElementById("btn-logout");
   if (btnLogout) {
     btnLogout.addEventListener("click", () => {
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ========================================================
-  // Efecto de sombra en el header al hacer scroll
+  // Header shadow effect on scroll
   // ========================================================
   const header = document.getElementById("main-header");
   if (header) {
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ========================================================
-  // Detección de enlace compartido
+  // Shared link detection
   // ========================================================
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get("token");
@@ -83,35 +83,35 @@ document.addEventListener("DOMContentLoaded", async () => {
   const router = createRouter();
   const main = document.querySelector("main");
 
-  // Público: Home
+  // Public: Home
   router.addRoute('/home', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initHomeView(main);
   });
 
-  // Público: Selección de rol
+  // Public: Role selection
   router.addRoute('/rol', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initRoleView(main);
   });
 
-  // Público: Login
+  // Public: Login
   router.addRoute('/login', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initLoginView(main);
   });
 
-  // Público: Registro profesional
+  // Public: Professional registration
   router.addRoute('/register', () => {
     document.body.classList.remove('dashboard-mode');
     if (btnLogout) btnLogout.style.display = 'none';
     initRegisterView(main);
   });
 
-  // Protegido: Panel profesional
+  // Protected: Professional panel
   router.addRoute('/professional', async () => {
     if (!isAuthenticated() || getRole() !== 'professional') {
       router.navigate('/login?role=professional');
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await initProfessionalView(main);
   });
 
-  // Protegido: Panel cliente
+  // Protected: Client panel
   router.addRoute('/client', async () => {
     document.body.classList.remove('dashboard-mode');
     if (!isAuthenticated() || getRole() !== 'client') {
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await initClientView(main);
   });
 
-  // Ruta no encontrada → home
+  // Route not found → home
   router.addRoute('*', () => router.navigate('/home'));
 
   router.start();

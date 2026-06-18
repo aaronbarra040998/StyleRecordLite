@@ -5,7 +5,7 @@ export function loadTempLinks() {
     const data = localStorage.getItem(TEMP_LINKS_KEY);
     return data ? JSON.parse(data) : [];
   } catch (error) {
-    console.error("Error al cargar enlaces temporales:", error);
+    console.error("Error loading temporary links:", error);
     return [];
   }
 }
@@ -15,7 +15,7 @@ export function saveTempLinks(links) {
     localStorage.setItem(TEMP_LINKS_KEY, JSON.stringify(links));
     return true;
   } catch (error) {
-    console.error("Error al guardar enlaces temporales:", error);
+    console.error("Error saving temporary links:", error);
     return false;
   }
 }

@@ -1,74 +1,166 @@
 # StyleRecord Lite
 
-Aplicación web para que profesionales de la belleza registren clientes, servicios y compartan historiales mediante enlaces temporales.
+A web application for beauty professionals to register clients, log services, and share visual histories via temporary links.
 
-## 🚀 Demo en vivo
+## 🚀 Live Demo
 
 [GitHub Pages](https://aaronbarra040998.github.io/StyleRecordLite/)
 
-## 📋 Funcionalidades
+## 📋 Features
 
-- Registro de clientes con validación telefónica (Numverify API)
-- CRUD de clientes (crear, leer, actualizar, eliminar)
-- Registro de servicios (corte, tinte, tratamiento, etc.) con imágenes placeholder (Lorem Picsum)
-- Historial cronológico de servicios por cliente
-- Vista de cliente (acceso por número de teléfono, solo lectura)
-- Generación de enlaces temporales (24h) para compartir perfil
-- Búsqueda de clientes en tiempo real
-- Diseño responsive (mobile first)
+- Client registration with phone validation (Numverify API)
+- Full CRUD for clients (create, read, update, delete)
+- Service logging (cut, color, treatment, etc.) with placeholder images (Lorem Picsum)
+- Chronological service history per client
+- Client‑side view (phone‑based access, read‑only)
+- Temporary share links (24 h) for client profiles
+- Real‑time client search with autocomplete
+- Responsive design (mobile‑first)
+- Progressive Web App ready (service worker via Workbox)
+- Internationalization (English & Spanish)
+- End‑to‑end testing with Cypress
+- Unit testing with Vitest
 
-## 🔑 APIs externas utilizadas
+## 🔑 External APIs
 
-| API | Uso | Atributos retornados |
-|-----|-----|----------------------|
-| [Numverify](https://numverify.com) | Validación de número telefónico | `valid`, `country_code`, `country_name`, `location`, `carrier`, `line_type` |
-| [Lorem Picsum](https://picsum.photos) | Imágenes placeholder para antes/después | URLs de imágenes aleatorias |
+| API | Usage | Returned attributes |
+|-----|-------|---------------------|
+| [Numverify](https://numverify.com) | Phone number validation | `valid`, `country_code`, `country_name`, `location`, `carrier`, `line_type` |
+| [Lorem Picsum](https://picsum.photos) | Before/after placeholder images | Random image URLs |
 
-## 🛠️ Tecnologías
+## 🛠️ Tech Stack
 
-- HTML5, CSS3, JavaScript (ES6+)
-- Vite (bundler)
-- localStorage (persistencia de datos)
-- ESLint + Prettier (calidad de código)
-- GitHub Pages / Netlify (despliegue)
+- **Frontend:** HTML5, CSS3, JavaScript (ES6+ modules)
+- **Bundler:** Vite
+- **Persistence:** IndexedDB (via `idb`) + localStorage
+- **Testing:** Vitest (unit) & Cypress (e2e)
+- **Code Quality:** ESLint + Prettier
+- **Deployment:** GitHub Pages (via `docs/` folder)
 
-## ⚙️ Instalación local
+## 📁 Project Structure
 
-1. Clonar el repositorio:
+```
+.
+├── .eslintrc.json
+├── .prettierrc
+├── cypress.config.js
+├── vite.config.js
+├── vitest.config.js
+├── package.json
+├── README.md
+├── cypress
+│   ├── e2e
+│   │   └── stylerecord.cy.js
+├── public/
+│   ├── images/
+│   │   ├── imgHome.png
+│   │   └── logit.ico
+│   └── partials/
+│       ├── footer.html
+│       └── header.html
+├── src/
+│   ├── index.html
+│   ├── .env.example
+│   ├── css/
+│   │   ├── style.css
+│   │   └── variables.css
+│   └── js/
+│       ├── tests/
+│       │   ├── storage.test.js
+│       │   └── validators.test.js
+│       ├── controllers/
+│       │   ├── clientController.mjs
+│       │   ├── homeController.mjs
+│       │   ├── loginController.mjs
+│       │   ├── professionalController.mjs
+│       │   ├── registerController.mjs
+│       │   ├── roleController.mjs
+│       │   └── sharedController.mjs
+│       ├── app.js
+│       ├── auth.mjs
+│       ├── countries.mjs
+│       ├── db.mjs
+│       ├── formBuilder.mjs
+│       ├── i18n.mjs
+│       ├── lightbox.mjs
+│       ├── loremPicsum.mjs
+│       ├── numverifyService.mjs
+│       ├── router.mjs
+│       ├── serviceManager.mjs
+│       ├── shareProfile.mjs
+│       ├── state.mjs
+│       ├── storage.mjs
+│       ├── toast.mjs
+│       ├── ui.mjs
+│       ├── utils.mjs
+│       └── validators.mjs
+└── docs/                # Production build output
+```
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Installation
+
+1. Clone the repository:
    ```bash
-
    git clone https://github.com/aaronbarra040998/StyleRecordLite.git
    cd StyleRecordLite
+   ```
 
-2. Instalar dependencias:
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-    npm install
+### Environment Variables
 
-3. Obtener API key gratuita de Numverify:
+1. Copy the example environment file:
+   ```bash
+   cp src/.env.example src/.env
+   ```
 
-    en https://numverify.com y reemplazar en src/js/numverifyService.mjs
+2. Obtain a free API key from [Numverify](https://numverify.com).
 
-4. Ejecutar servidor de desarrollo:
+3. Replace the placeholder in `src/.env`:
+   ```
+   VITE_NUMVERIFY_KEY=your_api_key_here
+   ```
 
-    npm run start
+### Run Development Server
 
-5. Abrir http://localhost:5173
+```bash
+npm run start
+```
 
-## 📦 Build de producción
+Open http://localhost:5173 in your browser.
 
--Los archivos se generan en docs/, listos para GitHub Pages.
+## 📦 Production Build
 
+The build output is placed in the `docs/` folder, ready for GitHub Pages deployment.
+
+```bash
 npm run build
+```
 
-## 🔒 Limitaciones conocidas
+## 🧪 Testing
 
--Almacenamiento solo local (sin backend). Los datos no se sincronizan entre dispositivos.
+Unit tests (Vitest):
+```bash
+npm run test
+```
 
--La API key de Numverify está expuesta en el frontend (para MVP).
+## 🔒 Known Limitations
 
--Límite gratuito de Numverify: 100 peticiones/mes. Se ofrece validación manual como fallback.
+- **Local storage only** – No backend; data is not synced across devices.
+- **Numverify API key exposed** – The key resides in the frontend bundle (acceptable for MVP).
+- **Numverify free tier** – 100 requests/month. Manual validation is offered as fallback.
+- **Temporary links** – Depend on the browser's localStorage where the token was generated. Not shareable across different devices unless the same browser data is available.
 
--Los enlaces temporales dependen del almacenamiento local del navegador que generó el token.
+## 📝 License
 
-## 📝 Licencia
-Proyecto académico – WDD 330.
+Academic project – WDD 330.

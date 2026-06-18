@@ -14,7 +14,7 @@ class Router {
 
   resolve() {
     const hash = window.location.hash.slice(1) || '/';
-    // Separar la ruta de los query params (ej: /login?role=professional → /login)
+    // Separate route from query params (e.g. /login?role=professional → /login)
     const [path] = hash.split('?');
     const handler = this.routes[path] || this.routes['*'];
     if (handler) handler();
@@ -34,8 +34,8 @@ export function createRouter() {
 }
 
 /**
- * Función utilitaria para navegar a una ruta desde cualquier lugar.
- * @param {string} hash - ruta a la que navegar (ej. '/login', '/professional')
+ * Utility function to navigate to a route from anywhere.
+ * @param {string} hash - route to navigate to (e.g. '/login', '/professional')
  */
 export function navigateTo(hash) {
   window.location.hash = hash;

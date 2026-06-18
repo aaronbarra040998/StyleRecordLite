@@ -9,11 +9,11 @@ function getDB() {
   if (!dbPromise) {
     dbPromise = openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion, newVersion, transaction) {
-        // Store de clientes (ya existía)
+        // Clients store (already existed)
         if (!db.objectStoreNames.contains('clients')) {
           db.createObjectStore('clients', { keyPath: 'id' });
         }
-        // Nuevos stores para la fase 7
+        // New stores for phase 7
         if (oldVersion < 2) {
           if (!db.objectStoreNames.contains('professionals')) {
             db.createObjectStore('professionals', { keyPath: 'id' });
@@ -73,7 +73,7 @@ export async function getClientById(id) {
   return db.get('clients', id);
 }
 
-// ─── Nuevas funciones para profesionales y empresas ───
+// ─── New functions for professionals and companies ───
 
 export async function saveProfessional(professional) {
   const db = await getDB();

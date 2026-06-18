@@ -8,13 +8,13 @@ import { logout } from '../auth.mjs';
 export async function initClientView(container) {
   const phone = localStorage.getItem('sr-client-phone');
   if (!phone) {
-    container.innerHTML = `<p class="login-support">No se encontró sesión de cliente.</p>`;
+    container.innerHTML = `<p class="login-support">Client session not found.</p>`;
     return;
   }
 
   const client = await getClientByPhone(phone);
   if (!client) {
-    container.innerHTML = `<p class="login-support">Perfil de cliente no encontrado.</p>`;
+    container.innerHTML = `<p class="login-support">Client profile not found.</p>`;
     return;
   }
 
@@ -25,83 +25,83 @@ export async function initClientView(container) {
     ? new Date(sorted[sorted.length - 1].date).getFullYear() 
     : new Date().getFullYear();
 
-  // Generar URL para compartir
+  // Generate share URL
   const token = generateShareToken(client.id);
   const shareUrl = `${window.location.origin}${window.location.pathname}?token=${token}`;
 
   container.innerHTML = `
     <section class="client-panel">
-      <!-- Header del panel -->
+      <!-- Panel header -->
       <div class="client-panel-header">
         <div>
-          <h1 class="client-panel-title">Historial de mis servicios</h1>
-          <p class="client-panel-subtitle">Bienvenida de nuevo, un registro detallado de tu evolución estética.</p>
+          <h1 class="client-panel-title">My Service History</h1>
+          <p class="client-panel-subtitle">Welcome back, a detailed record of your aesthetic evolution.</p>
         </div>
         <button class="btn-logout-client" id="btn-client-logout">
           <span class="material-symbols-outlined">logout</span>
-          Salir
+          Log out
         </button>
       </div>
 
-      <!-- Layout de 2 columnas -->
+      <!-- 2-column layout -->
       <div class="client-layout">
-        <!-- Columna principal: lista de servicios -->
+        <!-- Main column: service list -->
         <div class="client-services-col">
           <div class="timeline-line"></div>
           ${sorted.length === 0 ? `
             <div class="empty-services">
               <span class="material-symbols-outlined">history</span>
-              <h3>No tienes servicios registrados aún</h3>
-              <p>Tu historial aparecerá aquí cuando tu profesional registre servicios.</p>
+              <h3>You have no services registered yet</h3>
+              <p>Your history will appear here when your professional logs services.</p>
             </div>
           ` : sorted.map(service => renderClientServiceCard(service)).join('')}
         </div>
 
-        <!-- Columna lateral: perfil + acciones -->
+        <!-- Sidebar column: profile + actions -->
         <div class="client-sidebar-col">
-          <!-- Perfil del cliente -->
+          <!-- Client profile -->
           <div class="client-profile-card">
             <div class="client-profile-avatar">
               ${getInitials(client.name)}
             </div>
             <div class="client-profile-info">
               <h2 class="client-profile-name">${escapeHtml(client.name)}</h2>
-              <span class="client-profile-badge">Clienta Elite</span>
+              <span class="client-profile-badge">Elite Client</span>
             </div>
             <hr class="profile-divider" />
             <div class="client-stats">
               <div class="stat-item">
-                <span class="stat-label">Miembro desde</span>
+                <span class="stat-label">Member since</span>
                 <span class="stat-value">${memberSince}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Total Servicios</span>
+                <span class="stat-label">Total Services</span>
                 <span class="stat-value">${totalServices}</span>
               </div>
             </div>
           </div>
 
-          <!-- Próxima cita (placeholder) -->
+          <!-- Next appointment (placeholder) -->
           <div class="next-appointment-card">
             <div class="appointment-header">
               <span class="material-symbols-outlined">calendar_today</span>
-              <h4>Próxima Cita</h4>
+              <h4>Next Appointment</h4>
             </div>
-            <p class="appointment-date">No programada</p>
-            <p class="appointment-service">Solicita una cita con tu profesional</p>
-            <button class="btn-appointment" disabled>Reprogramar</button>
+            <p class="appointment-date">Not scheduled</p>
+            <p class="appointment-service">Request an appointment with your professional</p>
+            <button class="btn-appointment" disabled>Reschedule</button>
           </div>
 
-          <!-- Compartir perfil -->
+          <!-- Share profile -->
           <div class="share-profile-card">
             <div class="share-header">
               <span class="material-symbols-outlined">ios_share</span>
-              <h4>Compartir Evolución</h4>
+              <h4>Share Progress</h4>
             </div>
-            <p>¿Quieres mostrar tu evolución a tu estilista o amigas? Comparte tu perfil de forma segura.</p>
+            <p>Want to show your progress to your stylist or friends? Share your profile securely.</p>
             <button class="btn-share-profile" id="btn-share-profile">
               <span class="material-symbols-outlined">share</span>
-              Compartir Perfil
+              Share Profile
             </button>
           </div>
         </div>
@@ -113,31 +113,31 @@ export async function initClientView(container) {
       <button class="lightbox-close-btn" id="lightbox-close">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <img class="lightbox-image" id="lightbox-image" src="" alt="Vista ampliada" />
+      <img class="lightbox-image" id="lightbox-image" src="" alt="Enlarged view" />
     </div>
   `;
 
-  // Evento de logout
+  // Logout event
   document.getElementById('btn-client-logout').addEventListener('click', () => {
     logout();
     window.location.hash = '/home';
   });
 
-  // Evento de compartir perfil
+  // Share profile event
   document.getElementById('btn-share-profile').addEventListener('click', () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
-      showToast('¡Enlace de perfil copiado al portapapeles!', 'success');
+      showToast('Profile link copied to clipboard!', 'success');
     }).catch(() => {
-      showToast('No se pudo copiar el enlace', 'error');
+      showToast('Could not copy link', 'error');
     });
   });
 
-  // Eventos del lightbox
+  // Lightbox events
   const lightboxOverlay = document.getElementById('lightbox-overlay');
   const lightboxImage = document.getElementById('lightbox-image');
   const lightboxClose = document.getElementById('lightbox-close');
 
-  // Abrir lightbox al hacer clic en imágenes
+  // Open lightbox on image click
   container.querySelectorAll('.service-image-clickable').forEach(img => {
     img.addEventListener('click', (e) => {
       const src = e.currentTarget.querySelector('img')?.src;
@@ -149,7 +149,7 @@ export async function initClientView(container) {
     });
   });
 
-  // Cerrar lightbox
+  // Close lightbox
   lightboxClose.addEventListener('click', closeLightbox);
   lightboxOverlay.addEventListener('click', (e) => {
     if (e.target === lightboxOverlay) closeLightbox();
@@ -166,20 +166,20 @@ export async function initClientView(container) {
   }
 }
 
-// ─── Renderiza una tarjeta de servicio ───
+// ─── Render a service card ───
 function renderClientServiceCard(service) {
   const dateObj = new Date(service.date);
-  const formattedDate = dateObj.toLocaleDateString('es-ES', {
+  const formattedDate = dateObj.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
   });
 
-  // Imágenes disponibles
+  // Available images
   const images = [];
-  if (service.beforeImg) images.push({ src: service.beforeImg, label: 'ANTES' });
-  if (service.afterImg) images.push({ src: service.afterImg, label: 'DESPUÉS' });
-  if (service.afterLateralImg) images.push({ src: service.afterLateralImg, label: 'LATERAL' });
+  if (service.beforeImg) images.push({ src: service.beforeImg, label: 'BEFORE' });
+  if (service.afterImg) images.push({ src: service.afterImg, label: 'AFTER' });
+  if (service.afterLateralImg) images.push({ src: service.afterLateralImg, label: 'SIDE' });
 
   const imagesHtml = images.length > 0 
     ? `
@@ -198,7 +198,7 @@ function renderClientServiceCard(service) {
       <div class="service-notes-client">
         <span class="material-symbols-outlined">format_quote</span>
         <div>
-          <p class="notes-title">Notas del profesional</p>
+          <p class="notes-title">Professional's Notes</p>
           <p class="notes-text">"${escapeHtml(service.notes)}"</p>
         </div>
       </div>`
@@ -213,7 +213,7 @@ function renderClientServiceCard(service) {
           </div>
           <span class="service-date-text">${formattedDate}</span>
         </div>
-        <span class="service-status-badge">Finalizado</span>
+        <span class="service-status-badge">Completed</span>
       </div>
       <h3 class="service-type-title">${escapeHtml(service.type)}</h3>
       ${imagesHtml}
@@ -222,7 +222,7 @@ function renderClientServiceCard(service) {
   `;
 }
 
-// ─── Obtener iniciales del nombre ───
+// ─── Get initials from name ───
 function getInitials(name) {
   return name
     .split(' ')

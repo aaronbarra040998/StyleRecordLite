@@ -1,4 +1,4 @@
-// Lightbox reutilizable para mostrar imágenes en grande con navegación
+// Reusable lightbox to display large images with navigation
 let lightboxOverlay = null;
 
 function createLightbox() {
@@ -6,10 +6,10 @@ function createLightbox() {
   lightboxOverlay = document.createElement('div');
   lightboxOverlay.className = 'lightbox-overlay hidden';
   lightboxOverlay.innerHTML = `
-    <button class="lightbox-close" aria-label="Cerrar">&times;</button>
-    <button class="lightbox-prev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+    <button class="lightbox-close" aria-label="Close">&times;</button>
+    <button class="lightbox-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
     <img class="lightbox-img" src="" alt="" />
-    <button class="lightbox-next" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    <button class="lightbox-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
   `;
   document.body.appendChild(lightboxOverlay);
 
@@ -47,7 +47,7 @@ function updateImage() {
   const img = lightboxOverlay.querySelector('.lightbox-img');
   if (currentImages.length > 0 && currentIndex >= 0 && currentIndex < currentImages.length) {
     img.src = currentImages[currentIndex];
-    img.alt = `Imagen ${currentIndex + 1} de ${currentImages.length}`;
+    img.alt = `Image ${currentIndex + 1} of ${currentImages.length}`;
   }
 }
 

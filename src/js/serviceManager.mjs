@@ -1,7 +1,7 @@
 import { loadClients, saveClients } from "./storage.mjs";
 
 /**
- * Obtiene los servicios de un cliente por su ID.
+ * Retrieves a client's services by their ID.
  * @param {string} clientId
  * @returns {Promise<Array>}
  */
@@ -12,7 +12,7 @@ export async function getServicesByClientId(clientId) {
 }
 
 /**
- * Agrega un servicio a un cliente.
+ * Adds a service to a client.
  * @param {string} clientId
  * @param {Object} service
  * @returns {Promise<boolean>}
@@ -30,7 +30,7 @@ export async function addService(clientId, service) {
 }
 
 /**
- * Actualiza un servicio existente.
+ * Updates an existing service.
  * @param {string} clientId
  * @param {string} serviceId
  * @param {Object} updatedService
@@ -48,7 +48,7 @@ export async function updateService(clientId, serviceId, updatedService) {
 }
 
 /**
- * Elimina un servicio.
+ * Deletes a service.
  * @param {string} clientId
  * @param {string} serviceId
  * @returns {Promise<boolean>}

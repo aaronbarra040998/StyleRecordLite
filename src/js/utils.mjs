@@ -1,5 +1,5 @@
 /**
- * Utilidades generales: selectores, plantillas, header/footer, escape HTML, debounce, formato fecha.
+ * General utilities: selectors, templates, header/footer, HTML escaping, debounce, date formatting.
  * @module utils
  */
 
@@ -30,7 +30,7 @@ export async function loadHeaderFooter() {
 }
 
 /**
- * Escapa caracteres especiales para prevenir XSS en inyección de HTML.
+ * Escapes special characters to prevent XSS when injecting HTML.
  * @param {string} str
  * @returns {string}
  */
@@ -41,7 +41,7 @@ export function escapeHtml(str) {
 }
 
 /**
- * Crea una versión debounced de una función.
+ * Creates a debounced version of a function.
  * @param {Function} fn
  * @param {number} delay ms
  * @returns {Function}
@@ -55,14 +55,14 @@ export function debounce(fn, delay = 300) {
 }
 
 /**
- * Formatea una fecha ISO (YYYY-MM-DD) a formato legible.
+ * Formats an ISO date (YYYY-MM-DD) to a readable format.
  * @param {string} dateStr
  * @returns {string}
  */
 export function formatDate(dateStr) {
   const date = new Date(dateStr);
-  return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-// ✅ Nueva exportación: URL base para recursos estáticos
+// ✅ New export: base URL for static assets
 export const BASE_URL = import.meta.env.BASE_URL;

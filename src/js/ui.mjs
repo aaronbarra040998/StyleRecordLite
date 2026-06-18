@@ -16,29 +16,29 @@ export function renderServiceCard(service, editable = false) {
 
   const lateralImg = service.afterLateralImg || '';
   const lateralHtml = lateralImg
-    ? `<div class="image-item" data-index="${images.indexOf(lateralImg)}"><small>Después lateral</small><img src="${escapeHtml(lateralImg)}" alt="Después lateral" loading="lazy" /></div>`
-    : `<div class="image-item"><small>Después lateral</small><div class="image-placeholder-small">Sin foto</div></div>`;
+    ? `<div class="image-item" data-index="${images.indexOf(lateralImg)}"><small>After side</small><img src="${escapeHtml(lateralImg)}" alt="After side" loading="lazy" /></div>`
+    : `<div class="image-item"><small>After side</small><div class="image-placeholder-small">No photo</div></div>`;
 
   const beforeIdx = images.indexOf(service.beforeImg);
   const afterIdx = images.indexOf(service.afterImg);
   const lateralIdx = images.indexOf(service.afterLateralImg);
 
   return `
-    <div class="card service-card fade-in" data-service-id="${escapeHtml(service.id)}" role="article" aria-label="Servicio ${escapeHtml(service.type)} del ${escapeHtml(service.date)}">
+    <div class="card service-card fade-in" data-service-id="${escapeHtml(service.id)}" role="article" aria-label="Service ${escapeHtml(service.type)} on ${escapeHtml(service.date)}">
       <div class="service-header">
         <strong>${escapeHtml(service.type)}</strong>
         <span>${escapeHtml(service.date)}</span>
       </div>
       <p>${escapeHtml(service.notes)}</p>
       <div class="image-pair" data-images='${imagesJson}'>
-        <div class="image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}"><small>Antes</small><img src="${escapeHtml(service.beforeImg)}" alt="Antes" loading="lazy" /></div>
-        <div class="image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}"><small>Después frontal</small><img src="${escapeHtml(service.afterImg)}" alt="Después frontal" loading="lazy" /></div>
+        <div class="image-item" data-index="${beforeIdx >= 0 ? beforeIdx : 0}"><small>Before</small><img src="${escapeHtml(service.beforeImg)}" alt="Before" loading="lazy" /></div>
+        <div class="image-item" data-index="${afterIdx >= 0 ? afterIdx : 0}"><small>After front</small><img src="${escapeHtml(service.afterImg)}" alt="After front" loading="lazy" /></div>
         ${lateralHtml}
       </div>
       ${editable ? `
       <div class="service-actions">
-        <button class="btn-edit-service" data-id="${escapeHtml(service.id)}" aria-label="Editar servicio"><i class="fas fa-edit"></i> Editar</button>
-        <button class="btn-delete-service" data-id="${escapeHtml(service.id)}" aria-label="Eliminar servicio"><i class="fas fa-trash"></i> Eliminar</button>
+        <button class="btn-edit-service" data-id="${escapeHtml(service.id)}" aria-label="Edit service"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn-delete-service" data-id="${escapeHtml(service.id)}" aria-label="Delete service"><i class="fas fa-trash"></i> Delete</button>
       </div>` : ''}
     </div>
   `;
@@ -66,17 +66,17 @@ export function renderClientList(container, clients, filterText = "") {
     const lastService = c.services?.length
       ? c.services.reduce((latest, s) => new Date(s.date) > new Date(latest.date) ? s : latest)
       : null;
-    const lastDate = lastService ? formatDate(lastService.date) : 'Sin servicios';
+    const lastDate = lastService ? formatDate(lastService.date) : 'No services';
     return `
-      <div class="card client-card" data-id="${escapeHtml(c.id)}" tabindex="0" role="button" aria-label="Cliente ${escapeHtml(c.name)}">
+      <div class="card client-card" data-id="${escapeHtml(c.id)}" tabindex="0" role="button" aria-label="Client ${escapeHtml(c.name)}">
         <i class="fas fa-user-circle"></i>
         <div class="client-info">
           <strong>${escapeHtml(c.name)}</strong><br>
           <small>${escapeHtml(c.phone)} ${c.phoneValid ? '✓' : '✗'} · ${lastDate}</small>
         </div>
         <div class="client-actions">
-          <button class="btn-edit-client" data-id="${escapeHtml(c.id)}" aria-label="Editar ${escapeHtml(c.name)}"><i class="fas fa-edit"></i></button>
-          <button class="btn-delete-client" data-id="${escapeHtml(c.id)}" aria-label="Eliminar ${escapeHtml(c.name)}"><i class="fas fa-trash"></i></button>
+          <button class="btn-edit-client" data-id="${escapeHtml(c.id)}" aria-label="Edit ${escapeHtml(c.name)}"><i class="fas fa-edit"></i></button>
+          <button class="btn-delete-client" data-id="${escapeHtml(c.id)}" aria-label="Delete ${escapeHtml(c.name)}"><i class="fas fa-trash"></i></button>
         </div>
       </div>
     `;
@@ -117,7 +117,7 @@ export async function renderClientHistory(phone, container) {
 export async function renderSharedView(clientId, container) {
   const client = await getClientById(clientId);
   if (!client) {
-    container.innerHTML = "<p>Perfil no encontrado.</p>";
+    container.innerHTML = "<p>Profile not found.</p>";
     return;
   }
   const services = await getServicesByClientId(clientId);
@@ -134,7 +134,7 @@ export async function renderSharedView(clientId, container) {
   container.innerHTML = html;
 }
 
-// ── MODAL GENÉRICO ──
+// ── GENERIC MODAL ──
 export function showModal(title, contentHtml) {
   const overlay = document.getElementById("modal-overlay");
   const body = document.getElementById("modal-body");
@@ -225,16 +225,16 @@ export function initLightboxDelegation() {
       const index = parseInt(imageItem.getAttribute('data-index'), 10) || 0;
       openLightbox(images, index);
     } catch (err) {
-      // No abrir lightbox si falla el parse
+      // Don't open lightbox if parsing fails
     }
   });
 }
 
 // ── SKELETON LOADERS ──
 /**
- * Muestra tarjetas de skeleton mientras se cargan los servicios reales.
- * @param {HTMLElement} container - Contenedor donde se insertarán los skeletons.
- * @param {number} count - Número de skeletons a mostrar (por defecto 3).
+ * Displays skeleton cards while real services are loading.
+ * @param {HTMLElement} container - Container where skeletons will be inserted.
+ * @param {number} count - Number of skeletons to show (default 3).
  */
 export function showSkeletonCards(container, count = 3) {
   let html = '';

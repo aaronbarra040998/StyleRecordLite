@@ -1,7 +1,7 @@
 /**
- * Capa de persistencia de clientes.
- * Utiliza IndexedDB a través del módulo db.mjs para mayor capacidad y robustez.
- * Todas las operaciones son asíncronas y devuelven promesas.
+ * Client persistence layer.
+ * Uses IndexedDB through the db.mjs module for greater capacity and robustness.
+ * All operations are asynchronous and return promises.
  *
  * @module storage
  */
@@ -9,38 +9,38 @@
 import * as db from './db.mjs';
 
 /**
- * Carga todos los clientes desde la base de datos.
- * @returns {Promise<Array>} Array de objetos cliente
+ * Loads all clients from the database.
+ * @returns {Promise<Array>} Array of client objects
  */
 export async function loadClients() {
   try {
     return await db.loadClients();
   } catch (error) {
-    console.error('Error al cargar clientes:', error);
+    console.error('Error loading clients:', error);
     return [];
   }
 }
 
 /**
- * Guarda un array completo de clientes en la base de datos.
- * Reemplaza todos los existentes.
- * @param {Array} clients - Array de objetos cliente
- * @returns {Promise<boolean>} true si se guardó correctamente
+ * Saves a complete array of clients to the database.
+ * Replaces all existing ones.
+ * @param {Array} clients - Array of client objects
+ * @returns {Promise<boolean>} true if saved successfully
  */
 export async function saveClients(clients) {
   try {
     await db.saveClients(clients);
     return true;
   } catch (error) {
-    console.error('Error al guardar clientes:', error);
+    console.error('Error saving clients:', error);
     return false;
   }
 }
 
 /**
- * Busca un cliente por número de teléfono.
- * @param {string} phone - Número de teléfono exacto
- * @returns {Promise<Object|undefined>} Cliente encontrado o undefined
+ * Finds a client by phone number.
+ * @param {string} phone - Exact phone number
+ * @returns {Promise<Object|undefined>} Found client or undefined
  */
 export async function getClientByPhone(phone) {
   const clients = await loadClients();
@@ -48,61 +48,61 @@ export async function getClientByPhone(phone) {
 }
 
 /**
- * Busca un cliente por su ID.
- * @param {string} id - Identificador único del cliente
- * @returns {Promise<Object|undefined>} Cliente encontrado o undefined
+ * Finds a client by their ID.
+ * @param {string} id - Unique client identifier
+ * @returns {Promise<Object|undefined>} Found client or undefined
  */
 export async function getClientById(id) {
-  // Podríamos optimizar con db.getClientById(id), pero por consistencia usamos loadClients.
+  // Could be optimized with db.getClientById(id), but for consistency we use loadClients.
   const clients = await loadClients();
   return clients.find(c => c.id === id);
 }
 
 /**
- * Agrega un nuevo cliente a la base de datos.
- * @param {Object} client - Objeto cliente con id único y demás propiedades
- * @returns {Promise<boolean>} true si se insertó correctamente
+ * Adds a new client to the database.
+ * @param {Object} client - Client object with unique id and other properties
+ * @returns {Promise<boolean>} true if inserted successfully
  */
 export async function addClient(client) {
   try {
     await db.addClient(client);
     return true;
   } catch (error) {
-    console.error('Error al agregar cliente:', error);
+    console.error('Error adding client:', error);
     return false;
   }
 }
 
 /**
- * Actualiza los datos de un cliente existente.
- * @param {string} id - ID del cliente a modificar
- * @param {Object} updatedData - Campos a actualizar (ej: { name, phone })
- * @returns {Promise<boolean>} true si se actualizó correctamente
+ * Updates the data of an existing client.
+ * @param {string} id - ID of the client to modify
+ * @param {Object} updatedData - Fields to update (e.g.: { name, phone })
+ * @returns {Promise<boolean>} true if updated successfully
  */
 export async function updateClient(id, updatedData) {
   try {
     const success = await db.updateClient(id, updatedData);
     if (!success) {
-      console.warn(`Cliente con id ${id} no encontrado para actualizar.`);
+      console.warn(`Client with id ${id} not found for update.`);
     }
     return success;
   } catch (error) {
-    console.error('Error al actualizar cliente:', error);
+    console.error('Error updating client:', error);
     return false;
   }
 }
 
 /**
- * Elimina un cliente y todos sus servicios asociados.
- * @param {string} id - ID del cliente a eliminar
- * @returns {Promise<boolean>} true si se eliminó correctamente
+ * Deletes a client and all their associated services.
+ * @param {string} id - ID of the client to delete
+ * @returns {Promise<boolean>} true if deleted successfully
  */
 export async function deleteClient(id) {
   try {
     await db.deleteClient(id);
     return true;
   } catch (error) {
-    console.error('Error al eliminar cliente:', error);
+    console.error('Error deleting client:', error);
     return false;
   }
 }

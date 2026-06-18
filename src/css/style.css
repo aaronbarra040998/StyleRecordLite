@@ -1,9 +1,9 @@
 /* ============================================================
-   ESTILOS GLOBALES – StyleRecord Lite (nueva UI)
+   GLOBAL STYLES – StyleRecord Lite (new UI)
    ============================================================ */
 @import './variables.css';
 
-/* ─── Reset y base ─── */
+/* ─── Reset and base ─── */
 * {
   margin: 0;
   padding: 0;
@@ -143,7 +143,7 @@ header nav {
   color: var(--color-primary);
 }
 
-/* ─── Main padding para compensar header fijo ─── */
+/* ─── Main padding to compensate for fixed header ─── */
 main {
   padding-top: 64px;
 }
@@ -275,7 +275,7 @@ main {
 
 .hero-right {
   position: relative;
-  display: block; /* Se muestra en escritorio */
+  display: block; /* Shown on desktop */
 }
 
 .hero-image-wrapper {
@@ -448,10 +448,10 @@ main {
   margin-top: var(--space-xs);
 }
  /* ============================================================
-   ROLE SELECTION – Estilos originales de escritorio + mejoras móviles
+   ROLE SELECTION – Original desktop styles + mobile improvements
    ============================================================ */
 
-/* --- Estilos base (escritorio: idéntico al original usando nueva estructura) --- */
+/* --- Base styles (desktop: identical to original using new structure) --- */
 .role-selection {
   max-width: 560px;
   margin: 0 auto;
@@ -459,7 +459,7 @@ main {
   text-align: center;
 }
 
-/* Header: visible, pero ocultamos el logo (solo para móvil) */
+/* Header: visible, but we hide the logo (only for mobile) */
 .role-header {
   display: block;
   text-align: center;
@@ -467,7 +467,7 @@ main {
 }
 
 .role-brand {
-  display: none;            /* El logo "spa" no se ve en escritorio */
+  display: none;            /* The "spa" logo is not shown on desktop */
 }
 
 .role-heading {
@@ -543,7 +543,7 @@ main {
   color: var(--color-on-secondary-container);
 }
 
-/* Info: ahora visible, en columna y centrado */
+/* Info: now visible, in column and centered */
 .role-info {
   display: flex;
   flex-direction: column;
@@ -572,7 +572,7 @@ main {
   color: var(--color-on-surface-variant);
 }
 
-/* Elementos solo móviles: ocultos en escritorio */
+/* Mobile-only elements: hidden on desktop */
 .role-chevron,
 .role-decorative-image {
   display: none;
@@ -608,7 +608,7 @@ main {
 }
 
 /* ============================================================
-   MEJORAS MÓVIL (≤768px)
+   MOBILE IMPROVEMENTS (≤768px)
    ============================================================ */
 @media (max-width: 768px) {
 
@@ -616,7 +616,7 @@ main {
     padding: var(--space-xl) var(--space-margin-mobile);
   }
 
-  /* Mostramos el header nuevo con logo */
+  /* Show the new header with logo */
   .role-header {
     display: block;
     text-align: center;
@@ -662,7 +662,7 @@ main {
     margin-bottom: 0;
   }
 
-  /* Tarjetas: contenedor en columna */
+  /* Cards: column container */
   .role-cards {
     display: flex;
     flex-direction: column;
@@ -697,7 +697,7 @@ main {
     transform: scale(0.98);
   }
 
-  /* Info: columna forzada (título arriba, descripción abajo) */
+  /* Info: forced column (title on top, description below) */
   .role-info {
     display: flex !important;
     flex-direction: column !important;
@@ -783,10 +783,10 @@ main {
     object-fit: cover;
   }
 } /* ============================================================
-   LOGIN VIEW (PROFESIONAL + CLIENTE) – Estilos unificados y mejorados
+   LOGIN VIEW (PROFESSIONAL + CLIENT) – Unified and improved styles
    ============================================================ */
 
-/* --- Contenedor base (usado por ambos roles) --- */
+/* --- Base container (used by both roles) --- */
 .login-view {
   width: 100%;
   max-width: 100%;
@@ -796,7 +796,7 @@ main {
   z-index: 10;
 }
 
-/* Tarjeta de login (común) */
+/* Common login card */
 .login-card {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
@@ -807,7 +807,7 @@ main {
   border: 1px solid rgba(203, 195, 217, 0.2);
 }
 
-/* Icono circular (genérico) */
+/* Generic circular icon */
 .login-icon-circle {
   width: 64px;
   height: 64px;
@@ -825,7 +825,7 @@ main {
   transform: scale(1.05);
 }
 
-/* Títulos y subtítulos */
+/* Titles and subtitles */
 .login-title {
   font-family: var(--font-headline);
   font-size: var(--font-size-2xl);
@@ -842,7 +842,7 @@ main {
   margin-bottom: var(--space-lg);
 }
 
-/* Grupos de formulario */
+/* Form groups */
 .login-form-group {
   margin-bottom: var(--space-md);
 }
@@ -857,7 +857,7 @@ main {
   margin-left: 0.25rem;
 }
 
-/* Inputs con icono */
+/* Inputs with icon */
 .input-with-icon {
   position: relative;
 }
@@ -897,7 +897,7 @@ main {
   color: var(--color-primary);
 }
 
-/* Select wrapper (para el país) */
+/* Select wrapper (for country) */
 .select-wrapper {
   position: relative;
 }
@@ -932,7 +932,7 @@ main {
   pointer-events: none;
 }
 
-/* Botón de envío principal */
+/* Main submit button */
 .btn-login-submit {
   width: 100%;
   height: 3.5rem;
@@ -962,7 +962,7 @@ main {
   transform: scale(0.98);
 }
 
-/* Enlaces inferiores */
+/* Bottom links */
 .login-links {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
@@ -995,15 +995,15 @@ main {
   opacity: 0.7;
 }
 
-/* --- Decoraciones (solo visibles en móvil para profesional) --- */
+/* --- Decorations (visible only on mobile for professional) --- */
 .login-decorations {
   display: none;
 }
 
 /* ============================================================
-   LOGIN PROFESIONAL (diseño original mejorado)
+   PROFESSIONAL LOGIN (improved original design)
    ============================================================ */
-/* Se aplica cuando NO estamos en el layout de cliente */
+/* Applied when NOT in client layout */
 @media (max-width: 768px) {
   .login-view:not(:has(.login-client-container)) {
     max-width: 100%;
@@ -1101,7 +1101,7 @@ main {
 }
 
 /* ============================================================
-   LOGIN CLIENTE – NUEVO DISEÑO SPLIT (Imagen + Formulario)
+   CLIENT LOGIN – NEW SPLIT DESIGN (Image + Form)
    ============================================================ */
 .login-client-container {
   display: grid;
@@ -1114,7 +1114,7 @@ main {
   min-height: calc(100vh - 64px - 120px);
 }
 
-/* Columnas en escritorio */
+/* Desktop columns */
 @media (min-width: 1024px) {
   .login-client-container {
     grid-template-columns: 7fr 5fr;
@@ -1122,7 +1122,7 @@ main {
   }
 }
 
-/* Columna visual (solo escritorio) */
+/* Visual column (desktop only) */
 .login-client-visual {
   display: none;
 }
@@ -1206,7 +1206,7 @@ main {
   z-index: 1;
 }
 
-/* Columna del formulario (cliente) */
+/* Form column (client) */
 .login-client-form-col {
   width: 100%;
   max-width: 440px;
@@ -1230,7 +1230,7 @@ main {
 }
 
 .login-client-form-col .login-icon-circle {
-  display: none; /* Ocultamos el icono en cliente */
+  display: none; /* Hide icon on client login */
 }
 
 .login-client-form-col .login-title {
@@ -1243,7 +1243,7 @@ main {
   margin-bottom: var(--space-lg);
 }
 
-/* Botón gradiente para cliente */
+/* Gradient button for client */
 .luxury-gradient.btn-login-submit {
   background: linear-gradient(135deg, #4800b2 0%, #6200ee 50%, #531a90 100%);
   color: white;
@@ -1254,7 +1254,7 @@ main {
   box-shadow: 0 6px 20px rgba(72, 0, 178, 0.4);
 }
 
-/* Ajustes responsive para cliente */
+/* Responsive adjustments for client */
 @media (max-width: 1023px) {
   .login-client-container {
     min-height: auto;
@@ -1262,7 +1262,7 @@ main {
   }
 }
  /* ═══════════════════════════════════════════════════════════
-   DASHBOARD PROFESIONAL (CORREGIDO + MEJORAS MÓVIL)
+   PROFESSIONAL DASHBOARD (FIXED + MOBILE IMPROVEMENTS)
    ═══════════════════════════════════════════════════════════ */
 
 body.dashboard-mode #main-header,
@@ -1274,7 +1274,7 @@ body.dashboard-mode main {
   padding-top: 0 !important;
 }
 
-/* ─── Sidebar (escritorio) ─── */
+/* ─── Sidebar (desktop) ─── */
 .dashboard-sidebar {
   position: fixed;
   left: 0;
@@ -2020,7 +2020,7 @@ body.dashboard-mode main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 60;               /* Aumentado para superar la bottom nav (50) */
+  z-index: 60;               /* Increased to be above bottom nav (50) */
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -2038,11 +2038,11 @@ body.dashboard-mode main {
 }
 
 /* ============================================================
-   MEJORAS MÓVIL (≤1024px)
+   MOBILE IMPROVEMENTS (≤1024px)
    ============================================================ */
 @media (max-width: 1024px) {
 
-  /* Overlay del drawer */
+  /* Drawer overlay */
   .drawer-overlay {
     position: fixed;
     inset: 0;
@@ -2058,7 +2058,7 @@ body.dashboard-mode main {
     pointer-events: auto;
   }
 
-  /* Sidebar convertido en drawer */
+  /* Sidebar converted to drawer */
   .dashboard-sidebar {
     position: fixed;
     left: 0;
@@ -2075,14 +2075,14 @@ body.dashboard-mode main {
     transform: translateX(0);
   }
 
-  /* Dashboard Main ocupa todo el ancho */
+  /* Dashboard Main takes full width */
   .dashboard-main {
     margin-left: 0;
     height: 100vh;
-    padding-bottom: 72px; /* espacio para la barra inferior */
+    padding-bottom: 72px; /* space for bottom bar */
   }
 
-  /* Header del dashboard: añadimos botón hamburguesa */
+  /* Dashboard header: add hamburger button */
   .dashboard-header {
     padding: 0 var(--space-md);
     gap: var(--space-sm);
@@ -2117,24 +2117,24 @@ body.dashboard-mode main {
   }
 
   .dashboard-header-actions .header-avatar {
-    display: none; /* Ocultamos avatar en móvil para ganar espacio */
+    display: none; /* Hide avatar on mobile to save space */
   }
 
-  /* Ocultamos la sección de notificaciones/configuración temporalmente si es necesario */
+  /* Keep notification/settings buttons visible if needed */
   .dashboard-header-actions .header-icon-btn {
-    display: flex; /* Las mantenemos */
+    display: flex; /* Keep them */
   }
 
-  /* Main content area padding ajustado */
+  /* Main content area adjusted padding */
   .main-content-area {
     padding: var(--space-md) var(--space-margin-mobile);
-    padding-bottom: 80px; /* Espacio extra para la barra inferior */
+    padding-bottom: 80px; /* Extra space for bottom bar */
   }
 
-  /* Empty Dashboard (mejorado) */
+  /* Empty Dashboard (improved) */
   .empty-dashboard {
     height: auto;
-    min-height: auto;          /* eliminamos el 60vh que desperdiciaba espacio */
+    min-height: auto;          /* removed 60vh that wasted space */
     padding-top: var(--space-lg);
     padding-bottom: var(--space-md);
     margin-bottom: var(--space-md);
@@ -2164,7 +2164,7 @@ body.dashboard-mode main {
     max-width: 280px;
   }
 
-  /* Clientes Recientes (estilo tarjetas) */
+  /* Recent Clients (card style) */
   .recent-clients-section {
     margin-top: var(--space-lg);
   }
@@ -2196,7 +2196,7 @@ body.dashboard-mode main {
     border: 1px solid var(--color-outline-variant);
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.2s;
-    text-align: left; /* ← Solución: anula el text-align:center por defecto de los botones */
+    text-align: left; /* ← Solution: overrides default button text-align:center */
   }
 
   .recent-client-card:active {
@@ -2241,11 +2241,11 @@ body.dashboard-mode main {
     transform: translateX(4px);
   }
 
-  /* FAB ajustado para no chocar con la barra inferior */
+  /* FAB adjusted to not collide with bottom bar */
  .fab {
     bottom: 88px;            /* 72px (bottom nav) + 16px */
     right: var(--space-margin-mobile);
-    z-index: 60;             /* mismo que antes, aseguramos */
+    z-index: 60;             /* same as before, ensured */
   }
 
   /* ─── Bottom Navigation Bar ─── */
@@ -2298,7 +2298,7 @@ body.dashboard-mode main {
     font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 
-  /* Ajuste responsive para las tarjetas de servicio */
+  /* Responsive adjustment for service cards */
   .service-images-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2320,7 +2320,7 @@ body.dashboard-mode main {
   }
 }
 
-/* Ocultar la bottom-nav en escritorio */
+/* Hide bottom-nav on desktop */
 @media (min-width: 1025px) {
   .bottom-nav,
   .btn-hamburger,
@@ -2377,7 +2377,7 @@ body.dashboard-mode main {
   box-shadow: var(--shadow-xl);
 }
 
-/* ─── Client View (historial) ─── */
+/* ─── Client View (history) ─── */
 .history-cards {
   margin-top: var(--space-lg);
 }
@@ -2439,7 +2439,7 @@ body.dashboard-mode main {
 .hidden {
   display: none !important;
 }
-/* ─── MODALES MEJORADOS (Formularios y contenido) ─── */
+/* ─── IMPROVED MODALS (Forms and content) ─── */
 
 .modal-content h3 {
   font-family: var(--font-headline);
@@ -2532,7 +2532,7 @@ body.dashboard-mode main {
   background-color: var(--color-surface-container-high);
 }
 
-/* Mensajes de validación */
+/* Validation messages */
 .modal-content .field-error {
   color: var(--color-error);
   font-size: var(--font-size-sm);
@@ -2562,7 +2562,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface);
 }
 
-/* Spinner (si se usa dentro del modal) */
+/* Spinner (if used inside modal) */
 .modal-content .spinner {
   display: inline-block;
   width: 1.2rem;
@@ -2578,7 +2578,7 @@ body.dashboard-mode main {
   to { transform: rotate(360deg); }
 }
 
-/* ─── Modal de confirmación (showConfirmModal) ─── */
+/* ─── Confirmation modal (showConfirmModal) ─── */
 .confirm-actions {
   display: flex;
   gap: var(--space-md);
@@ -2616,7 +2616,7 @@ body.dashboard-mode main {
   background-color: var(--color-surface-container-high);
 }
 
-/* Ajuste del icono de cierre */
+/* Close icon adjustment */
 .modal-close {
   position: absolute;
   top: var(--space-sm);
@@ -2634,7 +2634,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface);
 }
 
-/* Previsualización de imágenes en modal de servicio */
+/* Image preview in service modal */
 .modal-content .image-preview-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2650,7 +2650,7 @@ body.dashboard-mode main {
   border: 1px solid var(--color-outline-variant);
 }
 /* ═══════════════════════════════════════════════════════════
-   REGISTRO PROFESIONAL (NUEVA UI)
+   PROFESSIONAL REGISTRATION (NEW UI)
    ═══════════════════════════════════════════════════════════ */
 
 .register-view-container {
@@ -2738,7 +2738,7 @@ body.dashboard-mode main {
   background: var(--color-primary);
 }
 
-/* Tarjeta del formulario */
+/* Form card */
 .register-card {
   background: var(--color-surface-container-lowest);
   border-radius: var(--radius-xl);
@@ -2765,7 +2765,7 @@ body.dashboard-mode main {
 }
 
 .register-card-body {
-  /* padding adicional si necesario */
+  /* additional padding if needed */
 }
 
 .register-form {
@@ -2789,7 +2789,7 @@ body.dashboard-mode main {
   letter-spacing: 0.05em;
 }
 
-/* Select estilizado (para registro) */
+/* Styled select (for registration) */
 .select-wrapper-register {
   position: relative;
 }
@@ -2824,7 +2824,7 @@ body.dashboard-mode main {
   pointer-events: none;
 }
 
-/* Radio cards (modalidad) */
+/* Radio cards (modality) */
 .radio-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2881,7 +2881,7 @@ body.dashboard-mode main {
   margin-top: var(--space-xs);
 }
 
-/* Decoración con imagen */
+/* Decorative image */
 .register-decoration {
   width: 100%;
   height: 140px;
@@ -2904,7 +2904,7 @@ body.dashboard-mode main {
   background: linear-gradient(to top, var(--color-surface-container-lowest) 0%, transparent 50%);
 }
 
-/* Botón gradiente oro */
+/* Gold gradient button */
 .btn-gold-gradient {
   background: linear-gradient(135deg, #735c00 0%, #fed65b 100%);
   color: var(--color-on-primary);
@@ -2931,7 +2931,7 @@ body.dashboard-mode main {
   transform: scale(0.97);
 }
 
-/* Botón outline */
+/* Outline button */
 .btn-outline {
   background: transparent;
   color: var(--color-primary);
@@ -2955,7 +2955,7 @@ body.dashboard-mode main {
   margin-top: var(--space-md);
 }
 
-/* Checkbox personalizado */
+/* Custom checkbox */
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -2971,7 +2971,7 @@ body.dashboard-mode main {
   accent-color: var(--color-primary);
 }
 
-/* Autocomplete (búsqueda de empresa) */
+/* Autocomplete (company search) */
 .autocomplete-wrapper {
   position: relative;
 }
@@ -3025,7 +3025,7 @@ body.dashboard-mode main {
   font-weight: var(--font-weight-semibold);
 }
 
-/* Resumen */
+/* Summary */
 .summary-box {
   background: #F8F9FA;
   border-radius: var(--radius-md);
@@ -3044,7 +3044,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface);
 }
 
-/* Badges de confianza */
+/* Trust badges */
 .register-trust {
   display: flex;
   align-items: center;
@@ -3067,7 +3067,7 @@ body.dashboard-mode main {
   background: var(--color-outline-variant);
 }
 
-/* Ajustes responsive */
+/* Responsive adjustments */
 @media (max-width: 600px) {
   .radio-cards {
     grid-template-columns: 1fr;
@@ -3077,7 +3077,7 @@ body.dashboard-mode main {
     align-items: stretch;
   }
 }
-/* Botón Cancelar */
+/* Cancel Button */
 .btn-cancel {
   background: transparent;
   border: none;
@@ -3089,15 +3089,15 @@ body.dashboard-mode main {
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius-md);
   transition: color 0.2s, background 0.2s;
-  order: -1; /* lo coloca a la izquierda en el flex */
-  margin-right: auto; /* lo empuja a la izquierda, dejando los otros botones a la derecha */
+  order: -1; /* places it on the left inside flex */
+  margin-right: auto; /* pushes it to the left, leaving other buttons on the right */
 }
 
 .btn-cancel:hover {
   color: var(--color-error);
   background: var(--color-error-light);
 }
-/* Input de texto genérico (registro) */
+/* Generic text input (registration) */
 .form-input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -3121,7 +3121,7 @@ body.dashboard-mode main {
   color: var(--color-outline-variant);
 }
 /* ═══════════════════════════════════════════════════════════
-   PANEL DE CLIENTE (NUEVA UI)
+   CLIENT PANEL (NEW UI)
    ═══════════════════════════════════════════════════════════ */
 
 .client-panel {
@@ -3173,7 +3173,7 @@ body.dashboard-mode main {
   color: var(--color-on-surface);
 }
 
-/* Layout de 2 columnas */
+/* 2-column layout */
 .client-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -3186,7 +3186,7 @@ body.dashboard-mode main {
   }
 }
 
-/* Columna de servicios */
+/* Services column */
 .client-services-col {
   position: relative;
   display: flex;
@@ -3211,7 +3211,7 @@ body.dashboard-mode main {
   }
 }
 
-/* Tarjeta de servicio (cliente) */
+/* Service card (client) */
 .client-service-card {
   background: rgba(252, 249, 248, 0.7);
   backdrop-filter: blur(12px);
@@ -3289,7 +3289,7 @@ body.dashboard-mode main {
   margin-left: 48px;
 }
 
-/* Imágenes del servicio */
+/* Service images */
 .service-images-client {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3329,7 +3329,7 @@ body.dashboard-mode main {
   backdrop-filter: blur(4px);
 }
 
-/* Notas del servicio */
+/* Service notes */
 .service-notes-client {
   background: var(--color-surface-container-low);
   padding: var(--space-md);
@@ -3362,14 +3362,14 @@ body.dashboard-mode main {
   font-style: italic;
 }
 
-/* Columna lateral */
+/* Sidebar column */
 .client-sidebar-col {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-/* Tarjeta de perfil */
+/* Profile card */
 .client-profile-card {
   background: var(--color-primary);
   color: var(--color-on-primary);
@@ -3441,7 +3441,7 @@ body.dashboard-mode main {
   font-weight: var(--font-weight-bold);
 }
 
-/* Próxima cita */
+/* Next appointment */
 .next-appointment-card {
   background: var(--color-secondary-container);
   padding: var(--space-md);
@@ -3501,7 +3501,7 @@ body.dashboard-mode main {
   cursor: not-allowed;
 }
 
-/* Compartir perfil */
+/* Share profile */
 .share-profile-card {
   background: rgba(72, 0, 178, 0.05);
   padding: var(--space-md);
@@ -3589,7 +3589,7 @@ body.dashboard-mode main {
   object-fit: contain;
 }
 
-/* Ajustes responsive */
+/* Responsive adjustments */
 @media (max-width: 1024px) {
   .service-type-title,
   .service-images-client,
@@ -3610,10 +3610,10 @@ body.dashboard-mode main {
   }
 }
 /* ═══════════════════════════════════════════════════════════
-   VISTA COMPARTIDA (ENLACE TEMPORAL)
+   SHARED VIEW (TEMPORARY LINK)
    ═══════════════════════════════════════════════════════════ */
 
-/* Banner de expiración */
+/* Expiration banner */
 .expiration-banner {
   background-color: var(--color-secondary-container);
   color: var(--color-on-secondary-container);
@@ -3638,7 +3638,7 @@ body.dashboard-mode main {
   font-weight: var(--font-weight-bold);
 }
 
-/* Error cuando enlace no es válido */
+/* Error when link is not valid */
 .shared-error {
   display: flex;
   justify-content: center;
@@ -3673,14 +3673,14 @@ body.dashboard-mode main {
   margin-bottom: var(--space-lg);
 }
 
-/* Panel principal */
+/* Main panel */
 .shared-panel {
   max-width: 1200px;
   margin: 0 auto;
   padding: var(--space-xl) var(--space-margin-desktop);
 }
 
-/* Cabecera */
+/* Header */
 .shared-header {
   display: flex;
   justify-content: space-between;
@@ -3731,7 +3731,7 @@ body.dashboard-mode main {
   cursor: not-allowed;
 }
 
-/* Layout de dos columnas */
+/* Two-column layout */
 .shared-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -3744,7 +3744,7 @@ body.dashboard-mode main {
   }
 }
 
-/* Barra lateral */
+/* Sidebar */
 .shared-sidebar {
   display: flex;
   flex-direction: column;
@@ -3827,14 +3827,14 @@ body.dashboard-mode main {
   opacity: 0.9;
 }
 
-/* Lista de servicios */
+/* Services list */
 .shared-services-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-/* Tarjeta de servicio (vista compartida) */
+/* Service card (shared view) */
 .shared-service-card {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
@@ -3947,20 +3947,19 @@ body.dashboard-mode main {
 }
 
 /* ============================================================
-   MEJORAS HOME MÓVIL (Nuevo diseño)
+   MOBILE HOME IMPROVEMENTS (New design)
    ============================================================ */
 
-/* Elementos decorativos del hero (solo móvil) */
-/* Elementos decorativos del hero (solo móvil) */
+/* Decorative hero elements (mobile only) */
 .hero-deco {
   display: none;
 }
 
 @media (max-width: 768px) {
-  /* 👇 FIX: Contenedor posicionado para los círculos decorativos */
+  /* 👇 FIX: Positioned container for decorative circles */
   .hero-section {
     position: relative;
-    overflow: hidden; /* ya existía, lo dejamos */
+    overflow: hidden; /* already existed, kept */
   }
 
   .hero-deco {
@@ -3986,14 +3985,14 @@ body.dashboard-mode main {
     top: 6rem;
     left: -3rem;
   }
-  /* … resto de reglas móviles del hero */
+  /* … rest of mobile hero rules */
   @media (max-width: 768px) {
   body {
     overflow-x: hidden;
   }
 }
 
-  /* Hero mobile: centrar texto y apilar botones */
+  /* Mobile hero: center text and stack buttons */
   .hero-container {
     grid-template-columns: 1fr;
     text-align: center;
@@ -4003,7 +4002,7 @@ body.dashboard-mode main {
     align-items: center;
   }
   .hero-right {
-    display: none; /* Ocultamos la imagen en móvil para dar protagonismo al texto */
+    display: none; /* Hide image on mobile to give prominence to text */
   }
   .hero-actions {
     flex-direction: column;
@@ -4023,7 +4022,7 @@ body.dashboard-mode main {
     font-size: var(--font-size-md);
   }
 
-  /* Sección value props: tarjetas verticales con efecto vidrio */
+  /* Value props section: vertical cards with glass effect */
   .value-props-section {
     background: transparent;
     padding: var(--space-lg) var(--space-margin-mobile);
@@ -4071,7 +4070,7 @@ body.dashboard-mode main {
     font-size: var(--font-size-xs);
   }
 
-  /* Sección de servicio destacado (nueva) */
+  /* Featured service section (new) */
   .featured-service-section {
     display: block;
     padding: var(--space-lg) var(--space-margin-mobile);
@@ -4153,7 +4152,7 @@ body.dashboard-mode main {
     color: var(--color-on-primary);
   }
 
-  /* Animación de entrada para tarjetas */
+  /* Entrance animation for cards */
   .reveal-on-scroll {
     opacity: 0;
     transform: translateY(20px);
@@ -4164,7 +4163,7 @@ body.dashboard-mode main {
     transform: translateY(0);
   }
 
-  /* Badge animado (bounce suave) */
+  /* Animated badge (soft bounce) */
   .animate-bounce-slow {
     animation: bounceSlow 3s infinite;
   }
@@ -4173,7 +4172,7 @@ body.dashboard-mode main {
     50% { transform: translateY(-6px); }
   }
 
-  /* Divisor debajo del título de sección */
+  /* Divider below section title */
   .section-title-divider {
     width: 4rem;
     height: 4px;
@@ -4183,8 +4182,8 @@ body.dashboard-mode main {
   }
 }
 
-/* En escritorio (mayor a 768px) mantenemos el diseño original sin cambios. 
-   Aseguramos que la sección featured solo se muestre en móvil. */
+/* On desktop (larger than 768px) we keep the original design. 
+   Ensure featured section only shows on mobile. */
 @media (min-width: 769px) {
   .featured-service-section {
     display: none;
@@ -4195,44 +4194,44 @@ body.dashboard-mode main {
 }
 
 /* ============================================================
-   CORRECCIONES RESPONSIVE MÓVIL – Home
+   MOBILE RESPONSIVE FIXES – Home
    ============================================================ */
 
-/* Evitar que los elementos decorativos del hero causen overflow horizontal */
+/* Prevent hero decorative elements from causing horizontal overflow */
 @media (max-width: 768px) {
   .hero-section {
-    overflow: hidden; /* Contiene los pseudo-elementos que sobresalen */
+    overflow: hidden; /* Contains overflowing pseudo-elements */
   }
 
-  /* Ajustar el padding del header a la medida móvil definida en variables */
+  /* Adjust header padding to mobile measure defined in variables */
   #main-header {
-    padding: 0 var(--space-margin-mobile); /* 16px en lugar de 40px */
+    padding: 0 var(--space-margin-mobile); /* 16px instead of 40px */
   }
 
-  /* Asegurar que los elementos flexibles dentro del header no se desborden */
+  /* Ensure flexible elements inside header don't overflow */
   #main-header .logo,
   #main-header nav {
-    min-width: 0; /* Permite que se encojan si es necesario */
+    min-width: 0; /* Allows them to shrink if needed */
     flex-shrink: 1;
   }
 
-  /* Evitar que el botón «Acceder» se deforme antes de cargar la fuente de iconos */
+  /* Prevent "Sign in" button from deforming before icon font loads */
   .header-cta-btn .material-symbols-outlined {
     display: inline-block;
-    width: 1.25rem;      /* Tamaño fijo mientras carga la fuente */
+    width: 1.25rem;      /* Fixed size while font loads */
     height: 1.25rem;
     font-size: 1.25rem;
     line-height: 1;
-    visibility: visible; /* Previene parpadeos de layout */
+    visibility: visible; /* Prevents layout flickering */
   }
 
-  /* Alternativa: reservar espacio para el icono usando un contenedor */
+  /* Alternative: reserve space for icon using a container */
   .header-cta-btn {
-    white-space: nowrap;  /* Evitar que el texto del botón se parta */
+    white-space: nowrap;  /* Prevent button text from breaking */
   }
 }
 /* ============================================================
-   BOTÓN VOLVER AL INICIO (Dashboard Header)
+   BACK TO HOME BUTTON (Dashboard Header)
    ============================================================ */
 .btn-back-dashboard {
   width: 40px;
@@ -4254,7 +4253,7 @@ body.dashboard-mode main {
   background: var(--color-outline-variant);
 }
 
-/* Ajuste en el header del cliente para que el botón quede alineado */
+/* Adjustment in client header so button aligns properly */
 .client-detail-header {
   display: flex;
   align-items: flex-start;
@@ -4263,9 +4262,9 @@ body.dashboard-mode main {
   flex-wrap: wrap;
 }
 
-/* En escritorio mostramos el botón home al lado del menú hamburguesa (que se oculta) */
+/* On desktop show home button next to hamburger (which is hidden) */
 .btn-home-desktop {
-  display: none; /* Oculto por defecto (móvil usa hamburguesa) */
+  display: none; /* Hidden by default (mobile uses hamburger) */
 }
 
 @media (min-width: 1025px) {
@@ -4295,7 +4294,7 @@ body.dashboard-mode main {
 }
 
 /* ============================================================
-   DROPDOWN DE BÚSQUEDA (AUTOCOMPLETE)
+   SEARCH DROPDOWN (AUTOCOMPLETE)
    ============================================================ */
 .search-dropdown {
   position: absolute;
@@ -4309,7 +4308,7 @@ body.dashboard-mode main {
   list-style: none;
   max-height: 260px;
   overflow-y: auto;
-  z-index: 120; /* Por encima de la sidebar (100) */
+  z-index: 120; /* Above sidebar (100) */
   margin: 0;
   padding: var(--space-xs) 0;
 }
@@ -4344,11 +4343,11 @@ body.dashboard-mode main {
   color: var(--color-on-surface-variant);
 }
 /* ============================================================
-   BOTÓN FLOTANTE "VOLVER AL INICIO" (MÓVIL)
+   FLOATING BACK-TO-HOME BUTTON (MOBILE)
    ============================================================ */
 .fab-home-mobile {
   position: fixed;
-  bottom: 160px;            /* Encima del FAB principal (88px) */
+  bottom: 160px;            /* Above the main FAB (88px) */
   right: var(--space-margin-mobile);
   width: 48px;
   height: 48px;
@@ -4361,7 +4360,7 @@ body.dashboard-mode main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 61;              /* Por encima del FAB (60) */
+  z-index: 61;              /* Above FAB (60) */
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
@@ -4374,7 +4373,7 @@ body.dashboard-mode main {
   transform: scale(0.95);
 }
 
-/* Ocultar en escritorio */
+/* Hide on desktop */
 @media (min-width: 1025px) {
   .fab-home-mobile {
     display: none;

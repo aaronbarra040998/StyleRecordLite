@@ -27,7 +27,7 @@ export function initLoginView(container) {
 function renderProfessionalLogin(container) {
   container.innerHTML = `
     <section class="login-view active">
-      <!-- Fondos decorativos (solo visibles en móvil) -->
+      <!-- Decorative backgrounds (visible only on mobile) -->
       <div class="login-decorations" aria-hidden="true">
         <div class="login-deco-circle login-deco-circle--primary"></div>
         <div class="login-deco-circle login-deco-circle--secondary"></div>
@@ -38,34 +38,34 @@ function renderProfessionalLogin(container) {
         <div class="login-icon-circle">
           <span class="material-symbols-outlined" style="font-size:32px;">content_cut</span>
         </div>
-        <h1 class="login-title">Acceso Profesional</h1>
-        <p class="login-subtitle">Ingresa tus credenciales para gestionar tu salón.</p>
+        <h1 class="login-title">Professional Access</h1>
+        <p class="login-subtitle">Enter your credentials to manage your salon.</p>
         <form id="login-form">
           <div class="login-form-group">
-            <label for="prof-code">Código de Profesional</label>
+            <label for="prof-code">Professional Code</label>
             <div class="input-with-icon">
               <span class="material-symbols-outlined">lock</span>
-              <input type="password" id="prof-code" placeholder="Código" required autofocus />
+              <input type="password" id="prof-code" placeholder="Code" required autofocus />
             </div>
           </div>
           <button type="submit" class="btn-login-submit">
-            <span>Ingresar</span>
+            <span>Sign in</span>
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         </form>
         <div class="login-links">
-          <a href="#/register">¿No tienes cuenta? <strong style="color: var(--color-primary);">Regístrate</strong></a>
+          <a href="#/register">Don't have an account? <strong style="color: var(--color-primary);">Sign up</strong></a>
           <a href="#/rol">
             <span class="material-symbols-outlined" style="font-size:18px;">keyboard_backspace</span>
-            Volver a selección de rol
+            Back to role selection
           </a>
         </div>
       </div>
-      <p class="login-support">¿Problemas con tu código? Contacta a soporte técnico.</p>
+      <p class="login-support">Problems with your code? Contact technical support.</p>
     </section>
   `;
 
-  // Efecto de movimiento sutil de la tarjeta con el mouse (solo estético)
+  // Subtle card movement effect with mouse (purely aesthetic)
   const card = document.getElementById('professional-login-card');
   if (card && window.matchMedia('(hover: hover)').matches) {
     document.addEventListener('mousemove', (e) => {
@@ -76,7 +76,7 @@ function renderProfessionalLogin(container) {
     });
   }
 
-  // Evento submit (funcionalidad existente)
+  // Submit event (existing functionality)
   const form = document.getElementById('login-form');
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -90,7 +90,7 @@ function renderProfessionalLogin(container) {
 }
 
 function renderClientLogin(container) {
-  // Generar imágenes placeholder aleatorias
+  // Generate random placeholder images
   const imgSalon = getPlaceholderImage(600, 400, 'salon');
   const imgProductos = getPlaceholderImage(600, 600, 'productos');
 
@@ -101,36 +101,36 @@ function renderClientLogin(container) {
   container.innerHTML = `
     <section class="login-view active" style="max-width:100%; padding:0;">
       <div class="login-client-container">
-        <!-- Columna visual (escritorio) -->
+        <!-- Visual column (desktop) -->
         <div class="login-client-visual">
           <div class="visual-grid">
             <div class="visual-img-wrapper">
-              <img src="${imgSalon}" alt="Salón moderno" loading="lazy" />
+              <img src="${imgSalon}" alt="Modern salon" loading="lazy" />
               <div class="visual-overlay"></div>
             </div>
             <div class="visual-img-wrapper">
-              <img src="${imgProductos}" alt="Productos de belleza" loading="lazy" />
+              <img src="${imgProductos}" alt="Beauty products" loading="lazy" />
               <div class="visual-overlay"></div>
             </div>
           </div>
           <div class="visual-text-card">
-            <h2>Tu historial de belleza, en un solo lugar.</h2>
-            <p>Accede a tus citas pasadas, tratamientos realizados y recomendaciones personalizadas.</p>
+            <h2>Your beauty history, all in one place.</h2>
+            <p>Access your past appointments, treatments, and personalized recommendations.</p>
             <span class="material-symbols-outlined watermark">content_cut</span>
           </div>
         </div>
 
-        <!-- Columna del formulario -->
+        <!-- Form column -->
         <div class="login-client-form-col">
           <div class="login-card">
             <div class="login-icon-circle">
               <span class="material-symbols-outlined" style="font-size:32px;">group</span>
             </div>
-            <h1 class="login-title">Acceso Cliente</h1>
-            <p class="login-subtitle">Ingresa tu número de teléfono para continuar.</p>
+            <h1 class="login-title">Client Access</h1>
+            <p class="login-subtitle">Enter your phone number to continue.</p>
             <form id="login-form">
               <div class="login-form-group">
-                <label for="country-select">País</label>
+                <label for="country-select">Country</label>
                 <div class="select-wrapper">
                   <select id="country-select" required>
                     ${countryOptions}
@@ -139,24 +139,24 @@ function renderClientLogin(container) {
                 </div>
               </div>
               <div class="login-form-group">
-                <label for="login-phone">Número de Teléfono</label>
+                <label for="login-phone">Phone Number</label>
                 <div class="input-with-icon">
                   <span class="material-symbols-outlined">smartphone</span>
                   <input type="tel" id="login-phone" placeholder="987 654 321" required autofocus />
                 </div>
               </div>
               <button type="submit" class="btn-login-submit luxury-gradient">
-                <span>Ver historial</span>
+                <span>See history</span>
                 <span class="material-symbols-outlined">arrow_forward</span>
               </button>
             </form>
             <div class="login-links">
               <a href="#/rol">
                 <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-                Volver a selección de rol
+                Back to role selection
               </a>
               <p style="font-size:0.875rem; color:var(--color-on-surface-variant);">
-                ¿Eres un profesional? <a href="#/login?role=professional" style="color:var(--color-tertiary); font-weight:bold;">Acceso Business</a>
+                Are you a professional? <a href="#/login?role=professional" style="color:var(--color-tertiary); font-weight:bold;">Business Access</a>
               </p>
             </div>
           </div>

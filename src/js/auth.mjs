@@ -1,5 +1,5 @@
 /**
- * Autenticación simple (profesional / cliente) usando localStorage.
+ * Simple authentication (professional / client) using localStorage.
  * @module auth
  */
 
@@ -12,7 +12,7 @@ export function loginAsProfessional(code) {
       localStorage.setItem(ROLE_KEY, "professional");
       return true;
     } catch (error) {
-      console.error("Error al guardar rol:", error);
+      console.error("Error saving role:", error);
       return false;
     }
   }
@@ -24,7 +24,7 @@ export function loginAsClient(phone) {
     localStorage.setItem(ROLE_KEY, "client");
     localStorage.setItem("sr-client-phone", phone);
   } catch (error) {
-    console.error("Error al guardar rol de cliente:", error);
+    console.error("Error saving client role:", error);
   }
 }
 
@@ -32,7 +32,7 @@ export function getRole() {
   try {
     return localStorage.getItem(ROLE_KEY);
   } catch (error) {
-    console.error("Error al leer rol:", error);
+    console.error("Error reading role:", error);
     return null;
   }
 }
@@ -42,7 +42,7 @@ export function logout() {
     localStorage.removeItem(ROLE_KEY);
     localStorage.removeItem("sr-client-phone");
   } catch (error) {
-    console.error("Error al cerrar sesión:", error);
+    console.error("Error logging out:", error);
   }
 }
 

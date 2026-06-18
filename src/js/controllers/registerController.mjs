@@ -53,22 +53,22 @@ function renderStep(container) {
         <div class="stepper-steps">
           <div class="stepper-step ${currentStep >= 0 ? 'active' : ''} ${currentStep > 0 ? 'completed' : ''}">
             <div class="step-circle">1</div>
-            <span class="step-label ${currentStep >= 0 ? 'active' : ''}">Perfil</span>
+            <span class="step-label ${currentStep >= 0 ? 'active' : ''}">Profile</span>
           </div>
           <div class="stepper-line ${currentStep >= 1 ? 'active' : ''}"></div>
           <div class="stepper-step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}">
             <div class="step-circle">2</div>
-            <span class="step-label ${currentStep >= 1 ? 'active' : ''}">Portafolio</span>
+            <span class="step-label ${currentStep >= 1 ? 'active' : ''}">Portfolio</span>
           </div>
           <div class="stepper-line ${currentStep >= 2 ? 'active' : ''}"></div>
           <div class="stepper-step ${currentStep >= 2 ? 'active' : ''}">
             <div class="step-circle">3</div>
-            <span class="step-label ${currentStep >= 2 ? 'active' : ''}">Verificación</span>
+            <span class="step-label ${currentStep >= 2 ? 'active' : ''}">Verification</span>
           </div>
         </div>
       </div>
 
-      <!-- Card del formulario -->
+      <!-- Form card -->
       <div class="register-card">
         <div class="register-card-header">
           <h1 class="register-card-title">${getStepTitle(currentStep)}</h1>
@@ -80,31 +80,31 @@ function renderStep(container) {
         </div>
       </div>
 
-      <!-- Badges de confianza -->
+      <!-- Trust badges -->
       <div class="register-trust">
         <div class="trust-item">
           <span class="material-symbols-outlined">lock</span>
-          <span>Datos encriptados</span>
+          <span>Encrypted data</span>
         </div>
         <div class="trust-divider"></div>
         <div class="trust-item">
           <span class="material-symbols-outlined">verified</span>
-          <span>Plataforma Certificada</span>
+          <span>Certified Platform</span>
         </div>
       </div>
     </section>
   `;
 
-  // Evento del botón Cancelar
+  // Cancel button event
   const cancelBtn = document.getElementById('btn-cancel');
   if (cancelBtn) {
     cancelBtn.addEventListener('click', () => {
-      // Redirigir a selección de rol o home
+      // Redirect to role selection or home
       window.location.hash = '/rol';
     });
   }
 
-  // Eventos de navegación
+  // Navigation events
   if (currentStep > 0) {
     const prevBtn = document.getElementById('btn-prev');
     if (prevBtn) {
@@ -125,20 +125,20 @@ function renderStep(container) {
 
 function getStepTitle(step) {
   switch(step) {
-    case 0: return 'Información Profesional';
-    case 1: return 'Detalles del Negocio';
-    case 2: return 'Resumen del Registro';
+    case 0: return 'Professional Information';
+    case 1: return 'Business Details';
+    case 2: return 'Registration Summary';
     default: return '';
   }
 }
 
 function getStepSubtitle(step) {
   switch(step) {
-    case 0: return 'Completa los detalles de tu especialidad para comenzar a gestionar tu agenda con StyleRecord Lite.';
+    case 0: return 'Complete your specialty details to start managing your schedule with StyleRecord Lite.';
     case 1: return state.modality === 'independent' 
-      ? 'Configura los datos de tu actividad independiente.'
-      : 'Vincula tu perfil con la empresa donde trabajas.';
-    case 2: return 'Revisa que toda la información sea correcta antes de finalizar.';
+      ? 'Set up your independent activity details.'
+      : 'Link your profile with the company you work for.';
+    case 2: return 'Review all the information before finalizing.';
     default: return '';
   }
 }
@@ -156,15 +156,15 @@ function getStep0HTML() {
   return `
     <form id="step0-form" class="register-form">
       <div class="form-group">
-        <label class="form-label" for="prof-type">Tipo de profesional</label>
+        <label class="form-label" for="prof-type">Professional type</label>
         <div class="select-wrapper-register">
           <select id="prof-type" class="form-select" required>
-            <option value="" disabled ${!state.type ? 'selected' : ''}>Selecciona tu especialidad</option>
-            <option value="barbero" ${state.type === 'barbero' ? 'selected' : ''}>Barbero</option>
-            <option value="estilista" ${state.type === 'estilista' ? 'selected' : ''}>Estilista</option>
-            <option value="lashista" ${state.type === 'lashista' ? 'selected' : ''}>Lashista</option>
-            <option value="colorista" ${state.type === 'colorista' ? 'selected' : ''}>Colorista</option>
-            <option value="otros" ${state.type === 'otros' ? 'selected' : ''}>Otros</option>
+            <option value="" disabled ${!state.type ? 'selected' : ''}>Select your specialty</option>
+            <option value="barbero" ${state.type === 'barbero' ? 'selected' : ''}>Barber</option>
+            <option value="estilista" ${state.type === 'estilista' ? 'selected' : ''}>Stylist</option>
+            <option value="lashista" ${state.type === 'lashista' ? 'selected' : ''}>Lash Artist</option>
+            <option value="colorista" ${state.type === 'colorista' ? 'selected' : ''}>Colorist</option>
+            <option value="otros" ${state.type === 'otros' ? 'selected' : ''}>Other</option>
           </select>
           <span class="material-symbols-outlined select-icon">expand_more</span>
         </div>
@@ -172,33 +172,33 @@ function getStep0HTML() {
       </div>
 
       <div class="form-group">
-        <label class="form-label">Modalidad de trabajo</label>
+        <label class="form-label">Work modality</label>
         <div class="radio-cards">
           <label class="radio-card ${state.modality === 'independent' ? 'selected' : ''}">
             <input type="radio" name="modality" value="independent" ${state.modality === 'independent' ? 'checked' : ''} class="radio-input" />
             <span class="material-symbols-outlined radio-icon">person_pin</span>
-            <span class="radio-title">Independiente</span>
-            <span class="radio-desc">Trabajas por cuenta propia o a domicilio.</span>
+            <span class="radio-title">Independent</span>
+            <span class="radio-desc">You work on your own or at clients' homes.</span>
           </label>
           <label class="radio-card ${state.modality === 'employed' ? 'selected' : ''}">
             <input type="radio" name="modality" value="employed" ${state.modality === 'employed' ? 'checked' : ''} class="radio-input" />
             <span class="material-symbols-outlined radio-icon">store</span>
-            <span class="radio-title">Empleado</span>
-            <span class="radio-desc">Formas parte del equipo de un salón o clínica.</span>
+            <span class="radio-title">Employee</span>
+            <span class="radio-desc">You are part of a salon or clinic team.</span>
           </label>
         </div>
         <div class="field-error" id="error-modality"></div>
       </div>
 
       <div class="register-decoration">
-        <img src="${getPlaceholderImage(800, 200, 'salon-deco')}" alt="Salón profesional" loading="lazy" />
+        <img src="${getPlaceholderImage(800, 200, 'salon-deco')}" alt="Professional salon" loading="lazy" />
         <div class="decoration-overlay"></div>
       </div>
 
       <div class="form-actions">
-        <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
+        <button type="button" id="btn-cancel" class="btn-cancel">Cancel</button>
         <button type="button" id="btn-next" class="btn-gold-gradient">
-          <span>Siguiente</span>
+          <span>Next</span>
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>
       </div>
@@ -211,25 +211,25 @@ function getStep1HTML() {
     return `
       <form id="step1-form" class="register-form">
         <div class="form-group">
-          <label class="form-label" for="business-name">Nombre del local / Profesional</label>
-          <input type="text" id="business-name" class="form-input" value="${escapeHtml(state.businessName)}" placeholder="Ej. Estudio Belleza" required />
+          <label class="form-label" for="business-name">Business / Professional name</label>
+          <input type="text" id="business-name" class="form-input" value="${escapeHtml(state.businessName)}" placeholder="e.g. Beauty Studio" required />
           <div class="field-error" id="error-business-name"></div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="address">Dirección</label>
-          <input type="text" id="address" class="form-input" value="${escapeHtml(state.address)}" placeholder="Dirección del local" />
+          <label class="form-label" for="address">Address</label>
+          <input type="text" id="address" class="form-input" value="${escapeHtml(state.address)}" placeholder="Location address" />
           <div class="field-error" id="error-address"></div>
         </div>
         <label class="checkbox-label">
           <input type="checkbox" id="work-from-home" ${state.workFromHome ? 'checked' : ''} />
           <span class="checkmark"></span>
-          Trabajo a domicilio (sin local físico)
+          Work from home (no physical location)
         </label>
         <div class="form-actions">
-          <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
-          <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+          <button type="button" id="btn-cancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="btn-prev" class="btn-outline">Previous</button>
           <button type="button" id="btn-next" class="btn-gold-gradient">
-            <span>Siguiente</span>
+            <span>Next</span>
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
@@ -239,25 +239,25 @@ function getStep1HTML() {
     return `
       <form id="step1-form" class="register-form">
         <div class="form-group">
-          <label class="form-label">Buscar empresa existente</label>
+          <label class="form-label">Search existing company</label>
           <div class="autocomplete-wrapper">
-            <input type="text" id="company-search" class="form-input" placeholder="Nombre de la empresa..." autocomplete="off" />
+            <input type="text" id="company-search" class="form-input" placeholder="Company name..." autocomplete="off" />
             <ul id="company-suggestions" class="autocomplete-list hidden"></ul>
           </div>
         </div>
-        <div class="or-divider"><span>o</span></div>
+        <div class="or-divider"><span>or</span></div>
         <div class="form-group">
-          <label class="form-label" for="new-company-name">Registrar nueva empresa</label>
-          <input type="text" id="new-company-name" class="form-input" value="${escapeHtml(state.companyName)}" placeholder="Nombre de la empresa" />
+          <label class="form-label" for="new-company-name">Register new company</label>
+          <input type="text" id="new-company-name" class="form-input" value="${escapeHtml(state.companyName)}" placeholder="Company name" />
           <div class="field-error" id="error-company-name"></div>
           <input type="hidden" id="selected-company-id" value="${escapeHtml(state.companyId)}" />
           <p id="selected-company-display" class="selected-company"></p>
         </div>
         <div class="form-actions">
-          <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
-          <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+          <button type="button" id="btn-cancel" class="btn-cancel">Cancel</button>
+          <button type="button" id="btn-prev" class="btn-outline">Previous</button>
           <button type="button" id="btn-next" class="btn-gold-gradient">
-            <span>Siguiente</span>
+            <span>Next</span>
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
@@ -268,22 +268,22 @@ function getStep1HTML() {
 
 function getStep2HTML() {
   let summary = '<ul class="summary-list">';
-  summary += `<li><strong>Tipo:</strong> ${escapeHtml(state.type)}</li>`;
-  summary += `<li><strong>Modalidad:</strong> ${state.modality === 'independent' ? 'Independiente' : 'Empleado'}</li>`;
+  summary += `<li><strong>Type:</strong> ${escapeHtml(state.type)}</li>`;
+  summary += `<li><strong>Modality:</strong> ${state.modality === 'independent' ? 'Independent' : 'Employee'}</li>`;
   if (state.modality === 'independent') {
-    summary += `<li><strong>Nombre:</strong> ${escapeHtml(state.businessName)}</li>`;
+    summary += `<li><strong>Name:</strong> ${escapeHtml(state.businessName)}</li>`;
     if (!state.workFromHome) {
-      summary += `<li><strong>Dirección:</strong> ${escapeHtml(state.address)}</li>`;
+      summary += `<li><strong>Address:</strong> ${escapeHtml(state.address)}</li>`;
     } else {
-      summary += `<li><strong>Trabajo a domicilio:</strong> Sí</li>`;
+      summary += `<li><strong>Work from home:</strong> Yes</li>`;
     }
   } else {
     if (state.companyId) {
-      summary += `<li><strong>Empresa:</strong> ${escapeHtml(state.companyName)} (ID: ${escapeHtml(state.companyId)})</li>`;
+      summary += `<li><strong>Company:</strong> ${escapeHtml(state.companyName)} (ID: ${escapeHtml(state.companyId)})</li>`;
     } else {
-      summary += `<li><strong>Empresa nueva:</strong> ${escapeHtml(state.companyName)}</li>`;
+      summary += `<li><strong>New company:</strong> ${escapeHtml(state.companyName)}</li>`;
     }
-    summary += `<li><strong>Solicitar vinculación:</strong> ${state.requestLink ? 'Sí' : 'No'}</li>`;
+    summary += `<li><strong>Request linking:</strong> ${state.requestLink ? 'Yes' : 'No'}</li>`;
   }
   summary += '</ul>';
 
@@ -293,10 +293,10 @@ function getStep2HTML() {
         ${summary}
       </div>
       <div class="form-actions">
-        <button type="button" id="btn-cancel" class="btn-cancel">Cancelar</button>
-        <button type="button" id="btn-prev" class="btn-outline">Anterior</button>
+        <button type="button" id="btn-cancel" class="btn-cancel">Cancel</button>
+        <button type="button" id="btn-prev" class="btn-outline">Previous</button>
         <button type="button" id="btn-next" class="btn-gold-gradient">
-          <span>Finalizar</span>
+          <span>Finish</span>
           <span class="material-symbols-outlined">check</span>
         </button>
       </div>
@@ -315,7 +315,7 @@ async function handleNext(container) {
     renderStep(container);
   } else if (currentStep === 2) {
     await finalizeRegistration();
-    showSuccess('Registro completado correctamente.');
+    showSuccess('Registration completed successfully.');
     const { loginAsProfessional } = await import('../auth.mjs');
     loginAsProfessional('1234');
     window.location.hash = '/professional';
@@ -354,7 +354,7 @@ function validateStep1() {
     const companyId = document.getElementById('selected-company-id')?.value;
     const newCompanyName = document.getElementById('new-company-name')?.value.trim();
     if (!companyId && !newCompanyName) {
-      document.getElementById('error-company-name').textContent = 'Debes seleccionar una empresa o ingresar un nombre nuevo.';
+      document.getElementById('error-company-name').textContent = 'You must select a company or enter a new name.';
       return false;
     }
     if (newCompanyName && !companyId) {
@@ -368,7 +368,7 @@ function validateStep1() {
     } else if (companyId) {
       state.companyId = companyId;
       const display = document.getElementById('selected-company-display');
-      state.companyName = display ? display.textContent.replace('Empresa: ', '') : '';
+      state.companyName = display ? display.textContent.replace('Company: ', '') : '';
     }
     state.requestLink = true;
     return true;
@@ -405,7 +405,7 @@ async function finalizeRegistration() {
   }
 }
 
-// ─── Listeners auxiliares ───
+// ─── Auxiliary listeners ───
 function attachStep0Listeners() {
   const radios = document.querySelectorAll('input[name="modality"]');
   radios.forEach(radio => {
@@ -430,7 +430,7 @@ function attachStep1Listeners() {
       }
       const companies = await getCompaniesByName(query);
       suggestionsList.innerHTML = companies.length === 0
-        ? '<li class="no-results">No se encontraron empresas</li>'
+        ? '<li class="no-results">No companies found</li>'
         : companies.map(c => `<li data-id="${escapeHtml(c.id)}">${escapeHtml(c.name)}</li>`).join('');
       suggestionsList.classList.remove('hidden');
     });
@@ -439,7 +439,7 @@ function attachStep1Listeners() {
       const li = e.target.closest('li');
       if (!li || !li.dataset.id) return;
       document.getElementById('selected-company-id').value = li.dataset.id;
-      document.getElementById('selected-company-display').textContent = `Empresa: ${li.textContent}`;
+      document.getElementById('selected-company-display').textContent = `Company: ${li.textContent}`;
       searchInput.value = li.textContent;
       suggestionsList.classList.add('hidden');
       newCompanyInput.value = '';
